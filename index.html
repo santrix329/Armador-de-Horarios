@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HorariX - Armador de Horarios Académicos</title>
+    
+    <!--Enlace a la hoja de estilos principal -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Cabecera principal -->
+    <header>
+        <h1>HorariX</h1>
+        <p>Sistema inteligente de gestión y combinación de horarios académicos</p>
+    </header>
+
+    <!-- Contenedor principal de la aplicación -->
+    <main id="app-container">
+        <!-- Aquí cargaremos dinámicamente el catálogo, filtros y la rejilla mediante JavaScript -->
+        <section class="welcome-section">
+            <h2>Bienvenido al sistema</h2>
+            <p>Cargando catálogo de materias y bloques horarios...</p>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <p>&copy; 2026 - Desarrollo de Lenguajes para Clientes Web</p>
+    </footer>
+
+    <!-- CARGA DE SCRIPTS (ORDEN OBLIGATORIO)-->
+    
+    <!-- Primero los datos provistos por el profesor (crean BLOQUES y MATERIAS globalmente) -->
+    <script src="data/bloques.js"></script>
+    <script src="data/materias.js"></script>
+
+    <!-- 2. Después la lógica de nuestra aplicación -->
+    <script src="js/app.js"></script>
+</body>
+</html>
