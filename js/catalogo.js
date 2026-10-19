@@ -1,34 +1,66 @@
-/*
- * Gestiona la visualización, filtros y vista de detalle del catálogo de materias.
+/* 
+ * Aqui manejo todo lo relacionado con mostrar las materias, 
+ * los filtros y la vista de los detalles de cada una
  */
 
-// Renderiza la lista de materias en el contenedor html indicado
-function renderizarCatalogo(contenedorId, materias = obtenerTodasLasMaterias()) {
-    const contenedor = document.getElementById(contenedorId);
-    if (!contenedor) return;
+// Funcion para pintar la materias en el html
+function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMaterias()) {
+    
+    const caja = document.getElementById(contenedorId);
+    if (!caja) {
+        return; // Si no existe el contenedor nos salimos para que no de error
+    }
 
-    contenedor.innerHTML = "";
+    // Limpiamos la caja antes de dibujar para que no se repita todo
+    caja.innerHTML = "";
 
-    if (materias.length === 0) {
-        contenedor.innerHTML = `<div class="estado-vacio">No se encontraron materias que coincdan con los filtros</div>`;
+    // Si la lista viene vacia mostramos un aviso
+    if (listaMaterias.length === 0) {
+        caja.innerHTML = `<div class="estado-vacio">No se encontraron materias que coincidan con los filtros</div>`;
         return;
     }
 
-    materias.forEach(materia => {
+    // Recorremos la lista de materias una por una con el forEach
+    listaMaterias.forEach(materia => {
+        
         const tarjeta = document.createElement("div");
         tarjeta.className = "tarjeta-materia";
         
-        // Aqui se inidica si es manual o del catalogo oficial para la marca visual
-        const esManual = obtenerMateriasManuales().some(m => m.codigo === materia.codigo);
-        if (esManual) {
+        // Verificamos si la materia es creada a mano por el usuario
+        const manuales = obtenerMateriasManuales();
+        let esUnaMateriaManual = false;
+        
+        for (let i = 0; i < manuales.length; i++) {
+            if (manuales[i].codigo === materia.codigo) {
+                esUnaMateriaManual = true;
+            }
+        }
+
+        if (esUnaMateriaManual) {
             tarjeta.classList.add("materia-manual");
         }
+
+        // Armamos el HTML interno de la tarjeta
+        let htmlSecciones = "";
+        materia.secciones.forEach(sec => {
+            let htmlHorarios = "";
+            sec.horario.forEach(sesion => {
+                htmlHorarios += `<li>${sesion.dia}: ${sesion.bloques.join(", ")} (Aula: ${sesion.aula})</li>`;
+            });
+
+            htmlSecciones += `
+                <li>
+                    <strong>Sección ${sec.id}</strong> - ${sec.profesor}
+                    <ul>${htmlHorarios}</ul>
+                </li>
+            `;
+        });
 
         tarjeta.innerHTML = `
             <div class="materia-header">
                 <div>
                     <span class="materia-codigo">${materia.codigo}</span>
-                    <span class="badge-tipo">${esManual ? "Manual" : "Oficial"}</span>
+                    <span class="badge-tipo">${esUnaMateriaManual ? "Manual" : "Oficial"}</span>
                 </div>
                 <span class="materia-uc">${materia.uc} UC</span>
             </div>
@@ -38,43 +70,42 @@ function renderizarCatalogo(contenedorId, materias = obtenerTodasLasMaterias()) 
             <div id="detalles-${materia.codigo}" class="materia-detalles oculto">
                 <h4>Secciones Disponibles:</h4>
                 <ul>
-                    ${materia.secciones.map(sec => `
-                        <li>
-                            <strong>Sección ${sec.id}</strong> -${sec.profesor}
-                            <ul>
-                                ${sec.horario.map(sesion => `
-                                    <li>${sesion.dia}: ${sesion.bloques.join(", ")} (Aula: ${sesion.aula})</li>
-                                `).join("")}
-                            </ul>
-                        </li>
-                    `).join("")}
+                    ${htmlSecciones}
                 </ul>
             </div>
         `;
 
-        contenedor.appendChild(tarjeta);
+        caja.appendChild(tarjeta);
     });
 }
 
-// Filtra el catálogo según el trimestre seleccionado y el texto de búsqueda
+// Funcion para filtrar por texto o por trimestre
 function filtrarCatalogo(busqueda = "", trimestreFiltro = "todos") {
-    const todas = obtenerTodasLasMaterias();
+    const todasLasMaterias = obtenerTodasLasMaterias();
 
-    const filtradas = todas.filter(materia => {
-        const coincideTexto = materia.nombre.toLowerCase().includes(busqueda.toLowerCase()) || 
-                              materia.codigo.toLowerCase().includes(busqueda.toLowerCase());
+    const materiasFiltradas = todasLasMaterias.filter(materia => {
+        const textoBusqueda = busqueda.toLowerCase();
+        const coincideNombre = materia.nombre.toLowerCase().includes(textoBusqueda);
+        const coincideCodigo = materia.codigo.toLowerCase().includes(textoBusqueda);
         
-        const coincideTrimestre = trimestreFiltro === "todos" || materia.trimestre.toString() === trimestreFiltro.toString();
+        const pasaTexto = coincideNombre || coincideCodigo;
+        
+        let pasaTrimestre = false;
+        if (trimestreFiltro === "todos") {
+            pasaTrimestre = true;
+        } else {
+            pasaTrimestre = materia.trimestre.toString() === trimestreFiltro.toString();
+        }
 
-        return coincideTexto && coincideTrimestre;
+        return pasaTexto && pasaTrimestre;
     });
 
-    renderizarCatalogo("contenedor-catalogo", filtradas);
+    renderizarCatalogo("contenedor-catalogo", materiasFiltradas);
 }
 
-// Muestra u oculta el detalle de las secciones de una materia
-function toggleDetallesMateria(codigo) {
-    const elDetalle = document.getElementById(`detalles-${codigo}`);
+// Para abrir o cerrar los detalles de la materia cuando le dan al boton
+function toggleDetallesMateria(codigoMateria) {
+    const elDetalle = document.getElementById(`detalles-${codigoMateria}`);
     if (elDetalle) {
         elDetalle.classList.toggle("oculto");
     }
