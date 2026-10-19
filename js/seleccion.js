@@ -72,3 +72,37 @@ function agregarMateriaSeleccionada(codigoMateria) {
 function quitarMateriaSeleccionada(codigoMateria) {
     materiasSeleccionadas = materiasSeleccionadas.filter(m => m.codigo !== codigoMateria);
 }
+
+// Funcion para el atajo de agregar todo un trimestre completo
+function agregarTrimestreCompleto(numeroTrimestre) {
+    const todas = obtenerTodasLasMaterias();
+    const manuales = obtenerMateriasManuales();
+    const combinadas = [...todas, ...manuales];
+
+    const materiasTrimestre = combinadas.filter(m => m.trimestre === Number(numeroTrimestre));
+
+    let ucNuevas = 0;
+    const aAgregar = [];
+
+    for (let i = 0; i < materiasTrimestre.length; i++) {
+        const mat = materiasTrimestre[i];
+        const yaSeleccionada = materiasSeleccionadas.some(m => m.codigo === mat.codigo);
+        if (!yaSeleccionada) {
+            aAgregar.push(mat);
+            ucNuevas += mat.uc;
+        }
+    }
+
+    if (calcularTotalUc() + ucNuevas > topeUcMaximo) {
+        return { 
+            exito: false, 
+            mensaje: `El trimestre excede el tope de UC permitido (${topeUcMaximo} UC)` 
+        };
+    }
+
+    for (let j = 0; j < aAgregar.length; j++) {
+        agregarMateriaSeleccionada(aAgregar[j].codigo);
+    }
+
+    return { exito: true, mensaje: `Trimestre ${numeroTrimestre} agregado correctamente` };
+}
