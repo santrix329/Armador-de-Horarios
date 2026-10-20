@@ -106,3 +106,32 @@ function agregarTrimestreCompleto(numeroTrimestre) {
 
     return { exito: true, mensaje: `Trimestre ${numeroTrimestre} agregado correctamente` };
 }
+
+// Funcion para fijar una seccion especifica de una materia seleccionada
+function fijarSeccion(codigoMateria, idSeccion) {
+    const materia = materiasSeleccionadas.find(m => m.codigo === codigoMateria);
+    if (!materia) return;
+
+    materia.seccionesExcluidas = materia.seccionesExcluidas.filter(id => id !== idSeccion);
+
+    if (!materia.seccionesFijadas.includes(idSeccion)) {
+        materia.seccionesFijadas.push(idSeccion);
+    }
+}
+
+// Funcion para excluir una seccion especifica
+function excluirSeccion(codigoMateria, idSeccion) {
+    const materia = materiasSeleccionadas.find(m => m.codigo === codigoMateria);
+    if (!materia) return;
+
+    if (materia.seccionesExcluidas.length + 1 >= materia.secciones.length) {
+        console.warn("No puedes excluir todas las secciones de la materia");
+        return;
+    }
+
+    materia.seccionesFijadas = materia.seccionesFijadas.filter(id => id !== idSeccion);
+
+    if (!materia.seccionesExcluidas.includes(idSeccion)) {
+        materia.seccionesExcluidas.push(idSeccion);
+    }
+}
