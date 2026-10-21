@@ -142,7 +142,7 @@ function renderizarFormularioMateria(contenedorId) {
 
     const datosMateria = crearElemento("div", "fila-campos");
     datosMateria.append(
-        crearCampo("Código", crearInput("text", "", { placeholder: "Ej: ELE-401", autocomplete: "off" }), "codigo"),
+        crearCampo("Código", crearInput("text", "", { placeholder: "Ej: ABC-123", autocomplete: "off" }), "codigo"),
         crearCampo("Nombre", crearInput("text", "", { autocomplete: "off" }), "nombre"),
         crearCampo("Trimestre", crearInput("number", "", { min: "1", step: "1" }), "trimestre"),
         crearCampo("Unidades de crédito", crearInput("number", "", { min: "1", max: "5", step: "1" }), "uc")
