@@ -14,6 +14,17 @@ function crearElemento(etiqueta, clase = "", texto = "") {
     return elemento;
 }
 
+// convierte los caracteres especiales de html en entidades;
+// se usa cuando un texto escrito por el usuario termina dentro de una plantilla innerHTML
+function escaparHtml(texto) {
+    return String(texto)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+}
+
 // crea un boton que no envia formularios; accion queda en data-accion para la delegacion de eventos
 function crearBoton(texto, accion, clase = "btn-secundario") {
     const boton = crearElemento("button", clase, texto);

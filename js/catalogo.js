@@ -47,12 +47,13 @@ function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMateria
             sec.horario.forEach(sesion => {
                 // Se muestran horas legibles, nunca los identificadores de bloque
                 const horas = obtenerHorarioSesionEnTexto(sesion);
-                htmlHorarios += `<li>${sesion.dia}: ${horas.inicio} - ${horas.fin} (Aula: ${sesion.aula})</li>`;
+                htmlHorarios += `<li>${escaparHtml(sesion.dia)}: ${horas.inicio} - ${horas.fin} (Aula: ${escaparHtml(sesion.aula)})</li>`;
             });
 
+            // los textos se escapan porque las materias manuales los escribe el usuario
             htmlSecciones += `
                 <li>
-                    <strong>Sección ${sec.id}</strong> - ${sec.profesor}
+                    <strong>Sección ${escaparHtml(sec.id)}</strong> - ${escaparHtml(sec.profesor)}
                     <ul>${htmlHorarios}</ul>
                 </li>
             `;
@@ -61,12 +62,12 @@ function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMateria
         tarjeta.innerHTML = `
             <div class="materia-header">
                 <div>
-                    <span class="materia-codigo">${materia.codigo}</span>
+                    <span class="materia-codigo">${escaparHtml(materia.codigo)}</span>
                     <span class="badge-tipo">${esUnaMateriaManual ? "Manual" : "Oficial"}</span>
                 </div>
                 <span class="materia-uc">${materia.uc} UC</span>
             </div>
-            <h3 class="materia-nombre">${materia.nombre}</h3>
+            <h3 class="materia-nombre">${escaparHtml(materia.nombre)}</h3>
             <p class="materia-trimestre">Trimestre: ${materia.trimestre} | Secciones: ${materia.secciones.length}</p>
         `;
 
