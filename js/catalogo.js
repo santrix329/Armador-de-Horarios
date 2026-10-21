@@ -45,7 +45,9 @@ function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMateria
         materia.secciones.forEach(sec => {
             let htmlHorarios = "";
             sec.horario.forEach(sesion => {
-                htmlHorarios += `<li>${sesion.dia}: ${sesion.bloques.join(", ")} (Aula: ${sesion.aula})</li>`;
+                // Se muestran horas legibles, nunca los identificadores de bloque
+                const horas = obtenerHorarioSesionEnTexto(sesion);
+                htmlHorarios += `<li>${sesion.dia}: ${horas.inicio} - ${horas.fin} (Aula: ${sesion.aula})</li>`;
             });
 
             htmlSecciones += `
@@ -66,15 +68,26 @@ function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMateria
             </div>
             <h3 class="materia-nombre">${materia.nombre}</h3>
             <p class="materia-trimestre">Trimestre: ${materia.trimestre} | Secciones: ${materia.secciones.length}</p>
-            <button class="btn-detalles" onclick="toggleDetallesMateria('${materia.codigo}')">Ver Secciones</button>
-            <div id="detalles-${materia.codigo}" class="materia-detalles oculto">
-                <h4>Secciones Disponibles:</h4>
-                <ul>
-                    ${htmlSecciones}
-                </ul>
-            </div>
         `;
 
+        // El boton se crea con createElement para registrar el evento con addEventListener
+        const botonDetalles = document.createElement("button");
+        botonDetalles.className = "btn-detalles";
+        botonDetalles.textContent = "Ver Secciones";
+        botonDetalles.addEventListener("click", () => toggleDetallesMateria(materia.codigo));
+
+        const detalles = document.createElement("div");
+        detalles.id = `detalles-${materia.codigo}`;
+        detalles.className = "materia-detalles oculto";
+        detalles.innerHTML = `
+            <h4>Secciones Disponibles:</h4>
+            <ul>
+                ${htmlSecciones}
+            </ul>
+        `;
+
+        tarjeta.appendChild(botonDetalles);
+        tarjeta.appendChild(detalles);
         caja.appendChild(tarjeta);
     });
 }
@@ -101,6 +114,67 @@ function filtrarCatalogo(busqueda = "", trimestreFiltro = "todos") {
     });
 
     renderizarCatalogo("contenedor-catalogo", materiasFiltradas);
+}
+
+// Retorna los trimestres presentes en las materias, ordenados y sin repetir
+function obtenerTrimestresDisponibles() {
+    const trimestres = obtenerTodasLasMaterias().map(m => m.trimestre);
+    return [...new Set(trimestres)].sort((a, b) => a - b);
+}
+
+// Lee los controles del catalogo y vuelve a pintar las materias filtradas
+function aplicarFiltrosCatalogo() {
+    const buscador = document.getElementById("buscador-catalogo");
+    const selector = document.getElementById("filtro-trimestre");
+    const busqueda = buscador ? buscador.value.trim() : "";
+    const trimestre = selector ? selector.value : "todos";
+    filtrarCatalogo(busqueda, trimestre);
+}
+
+// Crea el buscador y el filtro por trimestre; las opciones salen de los datos
+function renderizarControlesCatalogo(contenedorId) {
+    const caja = document.getElementById(contenedorId);
+    if (!caja) {
+        return;
+    }
+
+    caja.innerHTML = "";
+
+    const etiquetaBuscador = document.createElement("label");
+    etiquetaBuscador.htmlFor = "buscador-catalogo";
+    etiquetaBuscador.textContent = "Buscar por nombre o código";
+
+    const buscador = document.createElement("input");
+    buscador.type = "search";
+    buscador.id = "buscador-catalogo";
+    buscador.placeholder = "Ej: Cálculo o MAT-101";
+    buscador.addEventListener("input", aplicarFiltrosCatalogo);
+
+    const etiquetaTrimestre = document.createElement("label");
+    etiquetaTrimestre.htmlFor = "filtro-trimestre";
+    etiquetaTrimestre.textContent = "Trimestre";
+
+    const selector = document.createElement("select");
+    selector.id = "filtro-trimestre";
+
+    const opcionTodos = document.createElement("option");
+    opcionTodos.value = "todos";
+    opcionTodos.textContent = "Todos";
+    selector.appendChild(opcionTodos);
+
+    obtenerTrimestresDisponibles().forEach(trimestre => {
+        const opcion = document.createElement("option");
+        opcion.value = String(trimestre);
+        opcion.textContent = `Trimestre ${trimestre}`;
+        selector.appendChild(opcion);
+    });
+
+    selector.addEventListener("change", aplicarFiltrosCatalogo);
+
+    caja.appendChild(etiquetaBuscador);
+    caja.appendChild(buscador);
+    caja.appendChild(etiquetaTrimestre);
+    caja.appendChild(selector);
 }
 
 // Para abrir o cerrar los detalles de la materia cuando le dan al boton

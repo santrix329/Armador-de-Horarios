@@ -20,12 +20,20 @@ function obtenerTopeUc() {
 
 // Funcion para cambiar el tope de UC si el usuario lo ajusta
 function cambiarTopeUc(nuevoTope) {
-    const ucActuales = calcularTotalUc();
-    if (nuevoTope >= ucActuales) {
-        topeUcMaximo = nuevoTope;
-        return true;
+    const tope = Number(nuevoTope);
+
+    // El tope debe ser un numero entero positivo
+    if (!Number.isInteger(tope) || tope <= 0) {
+        return { exito: false, mensaje: "El tope de UC debe ser un número entero positivo" };
     }
-    return false;
+
+    const ucActuales = calcularTotalUc();
+    if (tope < ucActuales) {
+        return { exito: false, mensaje: `El tope no puede ser menor a las ${ucActuales} UC ya seleccionadas` };
+    }
+
+    topeUcMaximo = tope;
+    return { exito: true, mensaje: `Tope de UC actualizado a ${tope}` };
 }
 
 // Funcion para calcular cuantas UC lleva acumuladas el usuario
@@ -75,11 +83,8 @@ function quitarMateriaSeleccionada(codigoMateria) {
 
 // Funcion para el atajo de agregar todo un trimestre completo
 function agregarTrimestreCompleto(numeroTrimestre) {
-    const todas = obtenerTodasLasMaterias();
-    const manuales = obtenerMateriasManuales();
-    const combinadas = [...todas, ...manuales];
-
-    const materiasTrimestre = combinadas.filter(m => m.trimestre === Number(numeroTrimestre));
+    // obtenerTodasLasMaterias ya incluye las materias manuales
+    const materiasTrimestre = obtenerTodasLasMaterias().filter(m => m.trimestre === Number(numeroTrimestre));
 
     let ucNuevas = 0;
     const aAgregar = [];
@@ -93,10 +98,11 @@ function agregarTrimestreCompleto(numeroTrimestre) {
         }
     }
 
-    if (calcularTotalUc() + ucNuevas > topeUcMaximo) {
-        return { 
-            exito: false, 
-            mensaje: `El trimestre excede el tope de UC permitido (${topeUcMaximo} UC)` 
+    const exceso = calcularTotalUc() + ucNuevas - topeUcMaximo;
+    if (exceso > 0) {
+        return {
+            exito: false,
+            mensaje: `El trimestre excede en ${exceso} UC el tope permitido (${topeUcMaximo} UC)`
         };
     }
 
@@ -105,6 +111,16 @@ function agregarTrimestreCompleto(numeroTrimestre) {
     }
 
     return { exito: true, mensaje: `Trimestre ${numeroTrimestre} agregado correctamente` };
+}
+
+// Retorna las secciones que se consideran para una materia seleccionada:
+// si hay secciones fijadas solo esas; si no, todas menos las excluidas
+function obtenerSeccionesDisponibles(materia) {
+    if (materia.seccionesFijadas && materia.seccionesFijadas.length > 0) {
+        return materia.secciones.filter(sec => materia.seccionesFijadas.includes(sec.id));
+    }
+    const excluidas = materia.seccionesExcluidas || [];
+    return materia.secciones.filter(sec => !excluidas.includes(sec.id));
 }
 
 // Funcion para fijar una seccion especifica de una materia seleccionada
