@@ -45,7 +45,9 @@ function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMateria
         materia.secciones.forEach(sec => {
             let htmlHorarios = "";
             sec.horario.forEach(sesion => {
-                htmlHorarios += `<li>${sesion.dia}: ${sesion.bloques.join(", ")} (Aula: ${sesion.aula})</li>`;
+                // Se muestran horas legibles, nunca los identificadores de bloque
+                const horas = obtenerHorarioSesionEnTexto(sesion);
+                htmlHorarios += `<li>${sesion.dia}: ${horas.inicio} - ${horas.fin} (Aula: ${sesion.aula})</li>`;
             });
 
             htmlSecciones += `
@@ -66,15 +68,26 @@ function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMateria
             </div>
             <h3 class="materia-nombre">${materia.nombre}</h3>
             <p class="materia-trimestre">Trimestre: ${materia.trimestre} | Secciones: ${materia.secciones.length}</p>
-            <button class="btn-detalles" onclick="toggleDetallesMateria('${materia.codigo}')">Ver Secciones</button>
-            <div id="detalles-${materia.codigo}" class="materia-detalles oculto">
-                <h4>Secciones Disponibles:</h4>
-                <ul>
-                    ${htmlSecciones}
-                </ul>
-            </div>
         `;
 
+        // El boton se crea con createElement para registrar el evento con addEventListener
+        const botonDetalles = document.createElement("button");
+        botonDetalles.className = "btn-detalles";
+        botonDetalles.textContent = "Ver Secciones";
+        botonDetalles.addEventListener("click", () => toggleDetallesMateria(materia.codigo));
+
+        const detalles = document.createElement("div");
+        detalles.id = `detalles-${materia.codigo}`;
+        detalles.className = "materia-detalles oculto";
+        detalles.innerHTML = `
+            <h4>Secciones Disponibles:</h4>
+            <ul>
+                ${htmlSecciones}
+            </ul>
+        `;
+
+        tarjeta.appendChild(botonDetalles);
+        tarjeta.appendChild(detalles);
         caja.appendChild(tarjeta);
     });
 }
