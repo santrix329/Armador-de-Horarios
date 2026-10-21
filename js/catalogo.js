@@ -177,6 +177,20 @@ function renderizarControlesCatalogo(contenedorId) {
     caja.appendChild(selector);
 }
 
+// vuelve a pintar el catalogo despues de registrar, editar o eliminar una materia manual;
+// regenera las opciones de trimestre por si aparecio o desaparecio alguno, sin perder el filtro elegido
+function refrescarCatalogo() {
+    const selector = document.getElementById("filtro-trimestre");
+    if (selector) {
+        const elegido = selector.value;
+        const trimestres = obtenerTrimestresDisponibles().map(String);
+        const opciones = [new Option("Todos", "todos"), ...trimestres.map(t => new Option(`Trimestre ${t}`, t))];
+        selector.replaceChildren(...opciones);
+        selector.value = trimestres.includes(elegido) ? elegido : "todos";
+    }
+    aplicarFiltrosCatalogo();
+}
+
 // Para abrir o cerrar los detalles de la materia cuando le dan al boton
 function toggleDetallesMateria(codigoMateria) {
     const elDetalle = document.getElementById(`detalles-${codigoMateria}`);

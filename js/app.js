@@ -6,6 +6,7 @@ console.log("Materias cargadas:", MATERIAS.length);
 function iniciarAplicacion() {
     renderizarControlesCatalogo("controles-catalogo");
     renderizarCatalogo("contenedor-catalogo");
+    renderizarFormularioMateria("contenedor-formulario");
 
     // El aviso de carga ya no es necesario una vez pintado el catalogo
     const avisoCarga = document.querySelector(".welcome-section");
