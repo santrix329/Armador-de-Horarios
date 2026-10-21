@@ -379,6 +379,14 @@ function manejarEnvioFormulario(evento) {
     const { datos, mapa } = leerFormulario();
     const errores = validarMateriaManual(datos, codigoEnEdicion);
 
+    // si la materia editada esta seleccionada, sus nuevas uc no pueden pasar el tope
+    if (codigoEnEdicion !== null && !errores.uc) {
+        const ucNuevas = Number(datos.uc);
+        if (calcularUcConCambio(codigoEnEdicion, ucNuevas) > obtenerTopeUc()) {
+            errores.uc = `La materia está en tu selección y con ${ucNuevas} UC se superaría el tope de ${obtenerTopeUc()} UC.`;
+        }
+    }
+
     limpiarErroresFormulario();
     if (Object.keys(errores).length > 0) {
         const primerFoco = mostrarErroresFormulario(errores, mapa);
@@ -388,11 +396,93 @@ function manejarEnvioFormulario(evento) {
     }
 
     const materia = construirMateriaManual(datos);
-    agregarMateriaManual(materia);
+    let mensaje;
+
+    if (codigoEnEdicion !== null) {
+        actualizarMateriaManual(codigoEnEdicion, materia);
+        actualizarMateriaSeleccionada(codigoEnEdicion, materia);
+        mensaje = `Se guardaron los cambios de ${materia.codigo}.`;
+    } else {
+        agregarMateriaManual(materia);
+        mensaje = `La materia ${materia.codigo} se agregó al catálogo.`;
+    }
 
     reiniciarFormulario();
     refrescarCatalogo();
-    mostrarAviso("aviso-form-materia", `La materia ${materia.codigo} se agregó al catálogo.`, "exito");
+    mostrarAviso("aviso-form-materia", mensaje, "exito");
+}
+
+// carga una materia manual en el formulario para editarla
+function cargarMateriaEnFormulario(codigo) {
+    const materia = obtenerMateriaPorCodigo(codigo);
+    if (!materia || !esMateriaManual(codigo)) return;
+
+    reiniciarFormulario();
+    ocultarAviso("aviso-form-materia");
+    codigoEnEdicion = codigo;
+
+    const formulario = document.getElementById("form-materia");
+    ["codigo", "nombre", "trimestre", "uc"].forEach(nombre => {
+        formulario.querySelector(`[data-campo="${nombre}"] input`).value = materia[nombre];
+    });
+    formulario.querySelector(".secciones-form").replaceChildren(
+        ...materia.secciones.map(seccion => crearBloqueSeccion(seccion))
+    );
+
+    actualizarModoFormulario();
+    renumerarFormulario();
+    formulario.scrollIntoView({ behavior: "smooth", block: "start" });
+    formulario.querySelector('[data-campo="codigo"] input').focus({ preventScroll: true });
+}
+
+// botones de editar y eliminar para la tarjeta de una materia manual;
+// eliminar pide confirmacion dentro de la misma tarjeta, sin confirm()
+function crearAccionesMateriaManual(codigo) {
+    const acciones = crearElemento("div", "acciones-manual");
+
+    const botones = crearElemento("div", "acciones-manual-botones");
+    const botonEditar = crearBoton("Editar", "", "btn-secundario");
+    const botonEliminar = crearBoton("Eliminar", "", "btn-peligro");
+    botones.append(botonEditar, botonEliminar);
+
+    const confirmacion = crearElemento("div", "confirmacion-eliminar");
+    confirmacion.setAttribute("role", "group");
+    confirmacion.setAttribute("aria-label", `Confirmar eliminación de ${codigo}`);
+    confirmacion.hidden = true;
+    const botonConfirmar = crearBoton("Sí, eliminar", "", "btn-peligro");
+    const botonCancelar = crearBoton("Cancelar", "", "btn-secundario");
+    confirmacion.append(
+        crearElemento("p", "", `¿Eliminar ${codigo}? Esta acción no se puede deshacer.`),
+        botonConfirmar,
+        botonCancelar
+    );
+
+    botonEditar.addEventListener("click", () => cargarMateriaEnFormulario(codigo));
+    botonEliminar.addEventListener("click", () => {
+        botones.hidden = true;
+        confirmacion.hidden = false;
+        botonCancelar.focus();
+    });
+    botonCancelar.addEventListener("click", () => {
+        confirmacion.hidden = true;
+        botones.hidden = false;
+        botonEliminar.focus();
+    });
+    botonConfirmar.addEventListener("click", () => eliminarMateriaDesdeCatalogo(codigo));
+
+    acciones.append(botones, confirmacion);
+    return acciones;
+}
+
+// elimina una materia manual y la saca tambien de la seleccion y del formulario
+function eliminarMateriaDesdeCatalogo(codigo) {
+    eliminarMateriaManual(codigo);
+    quitarMateriaSeleccionada(codigo);
+    if (codigoEnEdicion === codigo) {
+        reiniciarFormulario();
+    }
+    refrescarCatalogo();
+    mostrarAviso("aviso-catalogo", `La materia ${codigo} fue eliminada.`, "info");
 }
 
 // vuelve el formulario a su estado inicial: vacio, con una seccion y en modo registro

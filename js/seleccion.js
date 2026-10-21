@@ -81,6 +81,35 @@ function quitarMateriaSeleccionada(codigoMateria) {
     materiasSeleccionadas = materiasSeleccionadas.filter(m => m.codigo !== codigoMateria);
 }
 
+// total de uc que quedaria si una materia ya seleccionada pasara a tener ucNuevas
+function calcularUcConCambio(codigoMateria, ucNuevas) {
+    const materia = materiasSeleccionadas.find(m => m.codigo === codigoMateria);
+    if (!materia) return calcularTotalUc();
+    return calcularTotalUc() - materia.uc + ucNuevas;
+}
+
+// al editar una materia manual que esta seleccionada, reemplaza su copia en la seleccion;
+// conserva las secciones fijadas y excluidas que sigan existiendo
+function actualizarMateriaSeleccionada(codigoOriginal, materiaNueva) {
+    const indice = materiasSeleccionadas.findIndex(m => m.codigo === codigoOriginal);
+    if (indice === -1) return;
+
+    const anterior = materiasSeleccionadas[indice];
+    const idsNuevos = materiaNueva.secciones.map(s => s.id);
+    let excluidas = anterior.seccionesExcluidas.filter(id => idsNuevos.includes(id));
+
+    // si las exclusiones dejaran a la materia sin secciones, se descartan
+    if (excluidas.length >= idsNuevos.length) {
+        excluidas = [];
+    }
+
+    materiasSeleccionadas[indice] = {
+        ...materiaNueva,
+        seccionesFijadas: anterior.seccionesFijadas.filter(id => idsNuevos.includes(id)),
+        seccionesExcluidas: excluidas
+    };
+}
+
 // Funcion para el atajo de agregar todo un trimestre completo
 function agregarTrimestreCompleto(numeroTrimestre) {
     // obtenerTodasLasMaterias ya incluye las materias manuales

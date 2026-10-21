@@ -88,6 +88,10 @@ function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMateria
         `;
 
         tarjeta.appendChild(botonDetalles);
+        // solo las materias manuales se pueden editar o eliminar
+        if (esUnaMateriaManual) {
+            tarjeta.appendChild(crearAccionesMateriaManual(materia.codigo));
+        }
         tarjeta.appendChild(detalles);
         caja.appendChild(tarjeta);
     });
