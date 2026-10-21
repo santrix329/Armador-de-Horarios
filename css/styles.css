@@ -1,6 +1,410 @@
+/* paleta y medidas compartidas; cambiar aqui cambia toda la aplicacion */
+:root {
+    --fondo: #e0f2fe;
+    --superficie: #ffffff;
+    --superficie-suave: #f1f8fd;
+    --texto: #0f172a;
+    --texto-suave: #475569;
+    --borde: #cbd5e1;
+    --acento: #0369a1;
+    --acento-oscuro: #075985;
+    --foco: #f59e0b;
+    --error: #b91c1c;
+    --error-fondo: #fee2e2;
+    --exito: #15803d;
+    --exito-fondo: #dcfce7;
+    --info-fondo: #e0f2fe;
+    --radio: 10px;
+    --sombra: 0 1px 3px rgb(15 23 42 / 0.1);
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #e0f2fe; 
+    background-color: var(--fondo);
+    color: var(--texto);
+}
+
+/* el atributo hidden debe ganarle a cualquier display definido por clase */
+[hidden] {
+    display: none !important;
+}
+
+/* ---------- botones ---------- */
+
+.btn-primario,
+.btn-secundario,
+.btn-peligro,
+.btn-texto {
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radio);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+
+.btn-primario {
+    background: var(--acento);
+    color: #fff;
+}
+
+.btn-primario:hover {
+    background: var(--acento-oscuro);
+}
+
+.btn-secundario {
+    background: var(--superficie);
+    color: var(--acento);
+    border-color: var(--acento);
+}
+
+.btn-secundario:hover {
+    background: var(--superficie-suave);
+}
+
+.btn-peligro {
+    background: var(--superficie);
+    color: var(--error);
+    border-color: var(--error);
+}
+
+.btn-peligro:hover {
+    background: var(--error-fondo);
+}
+
+.btn-texto {
+    background: none;
+    color: var(--texto-suave);
+    padding: 0.3rem 0.5rem;
+    text-decoration: underline;
+}
+
+.btn-texto:hover {
+    color: var(--error);
+}
+
+.btn-primario:active,
+.btn-secundario:active,
+.btn-peligro:active {
+    transform: translateY(1px);
+}
+
+.btn-primario:focus-visible,
+.btn-secundario:focus-visible,
+.btn-peligro:focus-visible,
+.btn-texto:focus-visible {
+    outline: 3px solid var(--foco);
+    outline-offset: 2px;
+}
+
+/* ---------- avisos ---------- */
+
+.aviso {
+    margin: 0.75rem 0;
+    padding: 0.7rem 1rem;
+    border-radius: var(--radio);
+    border-left: 5px solid currentColor;
+    font-weight: 600;
+    animation: aparecer-aviso 0.25s ease-out;
+}
+
+.aviso-exito {
+    background: var(--exito-fondo);
+    color: var(--exito);
+}
+
+.aviso-error {
+    background: var(--error-fondo);
+    color: var(--error);
+}
+
+.aviso-info {
+    background: var(--info-fondo);
+    color: var(--acento-oscuro);
+}
+
+@keyframes aparecer-aviso {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+}
+
+/* ---------- formulario de materias manuales ---------- */
+
+#seccion-formulario {
+    max-width: 960px;
+}
+
+.form-materia {
+    background: var(--superficie);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    padding: 1.25rem;
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+}
+
+.form-materia > * {
+    justify-self: stretch;
+}
+
+.form-materia > [data-accion="agregar-seccion"] {
+    justify-self: start;
+}
+
+.form-titulo,
+.form-subtitulo {
+    margin: 0;
+}
+
+.fila-campos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.campo-form {
+    display: grid;
+    gap: 0.3rem;
+    align-content: start;
+}
+
+.campo-form label,
+.campo-bloques legend {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.campo-form input[type="text"],
+.campo-form input[type="number"],
+.campo-form select {
+    font: inherit;
+    color: var(--texto);
+    background: var(--superficie);
+    padding: 0.5rem 0.7rem;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+/* flecha propia para no depender de la apariencia del navegador */
+.campo-form select {
+    appearance: none;
+    padding-right: 2rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23475569' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    cursor: pointer;
+}
+
+.campo-form input:hover,
+.campo-form select:hover {
+    border-color: var(--acento);
+}
+
+.campo-form input:focus-visible,
+.campo-form select:focus-visible {
+    outline: none;
+    border-color: var(--acento);
+    box-shadow: 0 0 0 3px rgb(3 105 161 / 0.25);
+}
+
+.campo-invalido input[type="text"],
+.campo-invalido input[type="number"],
+.campo-invalido select {
+    border-color: var(--error);
+    background-color: #fff7f7;
+}
+
+.error-campo {
+    color: var(--error);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.error-campo:empty {
+    display: none;
+}
+
+/* secciones y sesiones */
+
+.secciones-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.seccion-form {
+    margin: 0;
+    padding: 1rem;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--superficie-suave);
+    display: grid;
+    gap: 1rem;
+}
+
+.seccion-form > legend {
+    font-weight: 700;
+    padding: 0 0.4rem;
+    color: var(--acento-oscuro);
+}
+
+.sesiones-form {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.sesion-form {
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-left: 4px solid var(--acento);
+    border-radius: var(--radio);
+    padding: 0.75rem 1rem;
+    display: grid;
+    grid-template-columns: minmax(140px, 180px) 1fr minmax(140px, 180px);
+    gap: 0.75rem 1rem;
+    align-items: start;
+}
+
+.sesion-form-encabezado,
+.sesion-form > .error-sesion {
+    grid-column: 1 / -1;
+}
+
+.sesion-form-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sesion-form-titulo {
+    font-weight: 700;
+}
+
+.acciones-seccion,
+.acciones-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+/* selector de bloques como fichas */
+
+.campo-bloques {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.campo-bloques legend {
+    padding: 0;
+    margin-bottom: 0.3rem;
+}
+
+.grupo-bloques {
+    display: grid;
+    gap: 0.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.grupo-bloques-titulo {
+    font-size: 0.8rem;
+    color: var(--texto-suave);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.fichas-bloques {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.ficha-bloque {
+    position: relative;
+}
+
+/* la casilla real sigue ahi para el teclado y los lectores de pantalla, pero invisible */
+.ficha-bloque input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.ficha-bloque span {
+    display: inline-block;
+    padding: 0.3rem 0.65rem;
+    border: 1.5px solid var(--borde);
+    border-radius: 999px;
+    background: var(--superficie);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.ficha-bloque:hover span {
+    border-color: var(--acento);
+}
+
+.ficha-bloque input:checked + span {
+    background: var(--acento);
+    border-color: var(--acento);
+    color: #fff;
+}
+
+.ficha-bloque input:focus-visible + span {
+    outline: 3px solid var(--foco);
+    outline-offset: 2px;
+}
+
+.campo-invalido .ficha-bloque span {
+    border-color: #fca5a5;
+}
+
+/* acciones de las materias manuales en el catalogo */
+
+.acciones-manual {
+    margin-top: 0.75rem;
+}
+
+.acciones-manual-botones,
+.confirmacion-eliminar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.confirmacion-eliminar {
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radio);
+    background: var(--error-fondo);
+}
+
+.confirmacion-eliminar p {
+    margin: 0;
+    flex-basis: 100%;
+    color: var(--error);
+    font-weight: 600;
+}
+
+/* en pantallas estrechas cada sesion se apila en una columna */
+@media (max-width: 640px) {
+    body {
+        padding: 12px;
+    }
+
+    .sesion-form {
+        grid-template-columns: 1fr;
+    }
 }
