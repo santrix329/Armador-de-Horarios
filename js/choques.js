@@ -61,14 +61,17 @@ function obtenerMateriasIncompatiblesSeleccionadas() {
                 continue;
             }
 
+        // Solo se comparan las secciones disponibles (respetando fijadas y excluidas)
+        let seccionesA = obtenerSeccionesDisponibles(matA);
+        let seccionesB = obtenerSeccionesDisponibles(matB);
         let todasChocan = true;
 
-        for (let a = 0; a < matA.secciones.length; a++) {
-                let secA = matA.secciones[a];
+        for (let a = 0; a < seccionesA.length; a++) {
+                let secA = seccionesA[a];
                 let hayOpcionLibre = false;
 
-               for (let b = 0; b < matB.secciones.length; b++) {
-                    let secB = matB.secciones[b];
+               for (let b = 0; b < seccionesB.length; b++) {
+                    let secB = seccionesB[b];
 
                     // aqui reutilizo la funcion en vez de repetir bucles
                    if (!seccionesChocanCompletas(secA, secB)) {
