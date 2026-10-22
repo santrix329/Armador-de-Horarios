@@ -12,16 +12,19 @@ let firmaResultados = "";
 // true cuando habia resultados y despues la seleccion cambio
 let resultadosDesactualizados = false;
 
-// resume la seleccion en un texto: cambiar una materia, sus secciones,
-// las fijadas o las excluidas produce una firma distinta
+// resume la seleccion completa en un texto: cualquier campo que cambie
+// (nombre, uc, secciones, fijadas, excluidas...) produce una firma distinta
 function calcularFirmaSeleccion() {
-    return JSON.stringify(obtenerMateriasSeleccionadas().map(m =>
-        [m.codigo, m.secciones, m.seccionesFijadas, m.seccionesExcluidas]
-    ));
+    return JSON.stringify(obtenerMateriasSeleccionadas());
 }
 
 // cualquier cambio en la seleccion invalida los resultados mostrados
 function verificarVigenciaResultados() {
+    // un error de "no hay materias" deja de tener sentido apenas cambia la seleccion
+    if (obtenerMateriasSeleccionadas().length > 0) {
+        ocultarAviso("aviso-resultados");
+    }
+
     if (resultadosGenerados === null) return;
     if (calcularFirmaSeleccion() === firmaResultados) return;
 
