@@ -1,13 +1,13 @@
 /* paleta y medidas compartidas; cambiar aqui cambia toda la aplicacion */
 :root {
-    --fondo: #e0f2fe;
-    --superficie: #ffffff;
-    --superficie-suave: #f1f8fd;
-    --texto: #0f172a;
-    --texto-suave: #475569;
-    --borde: #cbd5e1;
-    --acento: #0369a1;
-    --acento-oscuro: #075985;
+    --fondo: #c5d2db;
+    --superficie: #b3c7e4;
+    --superficie-suave: #ecded1;
+    --texto: #1a1918;
+    --texto-suave: #1f1607;
+    --borde: #deec9d;
+    --acento: #090909;
+    --acento-oscuro: #161718;
     --foco: #f59e0b;
     --error: #b91c1c;
     --error-fondo: #fee2e2;
@@ -545,6 +545,65 @@ body {
     color: var(--error);
     font-weight: 600;
     margin: 0.25rem 0;
+}
+
+/* 
+ * estilos para la rejilla semanal con css grid
+ */
+.rejilla {
+    display: grid;
+    grid-template-columns: 70px repeat(6, 1fr); /* 1 columna de horas y 6 columnas para los dias */
+    grid-template-rows: auto repeat(var(--filas, 144), 6px); /* cabecera de dias y filas de 6px */
+    gap: 1px;
+    background-color: #e2e8f0; /* color de las lineas divisorias de la grilla */
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-top: 15px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* celdas de encabezado de la rejilla */
+.rejilla-header-dia {
+    background-color: #f8fafc;
+    font-weight: 700;
+    text-align: center;
+    padding: 10px 4px;
+    font-size: 0.85rem;
+    color: #334155;
+    border-bottom: 2px solid #cbd5e1;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.rejilla-hora-etiqueta {
+    background-color: #f8fafc;
+    font-size: 0.75rem;
+    color: #64748b;
+    text-align: right;
+    padding-right: 8px;
+    padding-top: 2px;
+}
+
+/* bloques de sesiones que pinta javascript dentro de la rejilla */
+.sesion-rejilla {
+    background-color: var(--color-materia, #0284c7);
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: filter 0.15s ease, transform 0.15s ease;
+    z-index: 1;
+}
+
+.sesion-rejilla:hover {
+    filter: brightness(1.1);
+    transform: scale(1.01);
+    z-index: 3;
 }
 
 /* en pantallas estrechas cada sesion se apila en una columna */
