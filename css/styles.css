@@ -209,11 +209,12 @@ body {
     border-color: var(--acento);
 }
 
+/* el mismo contorno de foco que el resto de los controles */
 .campo-form input:focus-visible,
 .campo-form select:focus-visible {
-    outline: none;
+    outline: 3px solid var(--foco);
+    outline-offset: 1px;
     border-color: var(--acento);
-    box-shadow: 0 0 0 3px rgb(3 105 161 / 0.25);
 }
 
 .campo-invalido input[type="text"],
@@ -742,7 +743,8 @@ div.sesion-rejilla {
     text-align: right;
 }
 
-/* el detalle aparece y desaparece con una transicion; oculto no recibe foco */
+/* el detalle aparece y desaparece con una transicion; oculto no recibe foco.
+   al cerrar, la visibilidad cambia recien al final (retraso de 0.2s) para que se vea el desvanecido */
 .detalle-sesion {
     margin-top: 1rem;
     padding-top: 1rem;
@@ -750,13 +752,15 @@ div.sesion-rejilla {
     opacity: 0;
     transform: translateY(8px);
     visibility: hidden;
-    transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+    transition: opacity 0.2s, transform 0.2s, visibility 0s linear 0.2s;
 }
 
+/* al abrir, la visibilidad cambia al instante: asi el boton de cerrar puede recibir el foco enseguida */
 .detalle-sesion.abierto {
     opacity: 1;
     transform: none;
     visibility: visible;
+    transition: opacity 0.2s, transform 0.2s, visibility 0s;
 }
 
 .detalle-sesion h4 {
@@ -811,6 +815,11 @@ div.sesion-rejilla {
     list-style: none;
     margin: 0;
     padding: 0;
+}
+
+/* el codigo de la materia no se parte en dos lineas */
+.tabla-resumen td:first-child {
+    white-space: nowrap;
 }
 
 /* en pantallas estrechas la tabla se desplaza de lado */

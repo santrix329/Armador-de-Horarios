@@ -104,7 +104,7 @@ Definida como variables en `:root` (`css/styles.css`), así toda la aplicación 
 | `--foco` | `#f59e0b` | Contorno de foco del teclado e insignia de materias manuales |
 | `--error` / `--exito` | `#b91c1c` / `#15803d` | Avisos de error y de éxito |
 
-Cada materia recibe en la rejilla un tono distinto, repartido con el ángulo áureo (137,5°) para que dos materias vecinas no se parezcan. Ese color se mantiene en todas las opciones y en el resumen.
+Cada materia recibe en la rejilla un tono distinto según su posición en la selección, repartido con el ángulo áureo (137,5°) para que dos materias vecinas no se parezcan. Ese color se mantiene en todas las opciones de una misma generación y en el resumen del horario elegido. Los tonos son oscuros para que el texto blanco tenga buen contraste.
 
 ### Tipografía
 

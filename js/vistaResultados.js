@@ -293,11 +293,17 @@ function cerrarDetalleSesion() {
 // flechas izquierda y derecha cambian de opcion, salvo dentro de un control de formulario
 function manejarTeclaVistaResultado(evento) {
     if (["INPUT", "SELECT", "TEXTAREA"].includes(evento.target.tagName)) return;
+    if (evento.key !== "ArrowLeft" && evento.key !== "ArrowRight") return;
 
-    if (evento.key === "ArrowLeft") {
-        irAResultado(-1);
-    } else if (evento.key === "ArrowRight") {
-        irAResultado(1);
+    // si el foco estaba en una sesion, la rejilla se recrea y ese boton desaparece
+    const estabaEnRejilla = evento.target.closest("#contenedor-rejilla") !== null;
+
+    irAResultado(evento.key === "ArrowLeft" ? -1 : 1);
+
+    // el foco pasa a la primera sesion de la nueva opcion para no perder el lugar
+    if (estabaEnRejilla) {
+        const primeraSesion = document.querySelector("#contenedor-rejilla .sesion-rejilla");
+        if (primeraSesion) primeraSesion.focus();
     }
 }
 
