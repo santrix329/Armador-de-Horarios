@@ -73,18 +73,25 @@ function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMateria
 
         // El boton se crea con createElement para registrar el evento con addEventListener
         const botonDetalles = document.createElement("button");
+        botonDetalles.type = "button";
         botonDetalles.className = "btn-detalles";
-        botonDetalles.textContent = "Ver Secciones";
-        botonDetalles.addEventListener("click", () => toggleDetallesMateria(materia.codigo));
+        botonDetalles.textContent = "Ver secciones";
+        // aria-expanded le indica al lector de pantalla si el detalle esta abierto
+        botonDetalles.setAttribute("aria-expanded", "false");
+        botonDetalles.setAttribute("aria-controls", `detalles-${materia.codigo}`);
+        botonDetalles.addEventListener("click", () => toggleDetallesMateria(materia.codigo, botonDetalles));
 
         const detalles = document.createElement("div");
         detalles.id = `detalles-${materia.codigo}`;
         detalles.className = "materia-detalles oculto";
+        // el contenido va envuelto en un solo hijo para poder animar la altura al abrir y cerrar
         detalles.innerHTML = `
-            <h4>Secciones Disponibles:</h4>
-            <ul>
-                ${htmlSecciones}
-            </ul>
+            <div class="materia-detalles-contenido">
+                <h4>Secciones disponibles</h4>
+                <ul>
+                    ${htmlSecciones}
+                </ul>
+            </div>
         `;
 
         tarjeta.appendChild(botonDetalles);
@@ -105,14 +112,20 @@ function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMateria
     });
 }
 
+// pasa a minusculas y quita las tildes, para que "calculo" encuentre "Cálculo";
+// normalize("NFD") separa cada letra de su tilde y el replace borra las tildes sueltas
+function normalizarTexto(texto) {
+    return texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+
 // Funcion para filtrar por texto o por trimestre
 function filtrarCatalogo(busqueda = "", trimestreFiltro = "todos") {
     const todasLasMaterias = obtenerTodasLasMaterias();
+    const textoBusqueda = normalizarTexto(busqueda);
 
     const materiasFiltradas = todasLasMaterias.filter(materia => {
-        const textoBusqueda = busqueda.toLowerCase();
-        const coincideNombre = materia.nombre.toLowerCase().includes(textoBusqueda);
-        const coincideCodigo = materia.codigo.toLowerCase().includes(textoBusqueda);
+        const coincideNombre = normalizarTexto(materia.nombre).includes(textoBusqueda);
+        const coincideCodigo = normalizarTexto(materia.codigo).includes(textoBusqueda);
         
         const pasaTexto = coincideNombre || coincideCodigo;
         
@@ -205,9 +218,14 @@ function refrescarCatalogo() {
 }
 
 // Para abrir o cerrar los detalles de la materia cuando le dan al boton
-function toggleDetallesMateria(codigoMateria) {
+function toggleDetallesMateria(codigoMateria, boton) {
     const elDetalle = document.getElementById(`detalles-${codigoMateria}`);
-    if (elDetalle) {
-        elDetalle.classList.toggle("oculto");
+    if (!elDetalle) return;
+
+    // toggle devuelve true si la clase quedo puesta, es decir, si ahora esta oculto
+    const quedoOculto = elDetalle.classList.toggle("oculto");
+    if (boton) {
+        boton.textContent = quedoOculto ? "Ver secciones" : "Ocultar secciones";
+        boton.setAttribute("aria-expanded", String(!quedoOculto));
     }
 }
