@@ -158,25 +158,37 @@ function obtenerSeccionesDisponibles(materia) {
 }
 
 // Funcion para fijar una seccion especifica de una materia seleccionada
+// solo puede haber una fijada: la nueva reemplaza a la anterior
 function fijarSeccion(codigoMateria, idSeccion) {
     const materia = materiasSeleccionadas.find(m => m.codigo === codigoMateria);
     if (!materia) return;
 
     materia.seccionesExcluidas = materia.seccionesExcluidas.filter(id => id !== idSeccion);
-
-    if (!materia.seccionesFijadas.includes(idSeccion)) {
-        materia.seccionesFijadas.push(idSeccion);
-    }
+    materia.seccionesFijadas = [idSeccion];
 }
 
-// Funcion para excluir una seccion especifica
-function excluirSeccion(codigoMateria, idSeccion) {
+// deja de fijar la seccion de una materia; vuelven a considerarse todas las no excluidas
+function liberarSeccionFijada(codigoMateria) {
     const materia = materiasSeleccionadas.find(m => m.codigo === codigoMateria);
     if (!materia) return;
 
-    if (materia.seccionesExcluidas.length + 1 >= materia.secciones.length) {
-        console.warn("No puedes excluir todas las secciones de la materia");
-        return;
+    materia.seccionesFijadas = [];
+}
+
+// Funcion para excluir una seccion especifica
+// devuelve { exito, mensaje } para que la interfaz muestre el resultado en pantalla
+function excluirSeccion(codigoMateria, idSeccion) {
+    const materia = materiasSeleccionadas.find(m => m.codigo === codigoMateria);
+    if (!materia) {
+        return { exito: false, mensaje: "La materia no está en la selección" };
+    }
+
+    // tiene que quedar al menos una seccion sin excluir
+    const restantes = materia.secciones.filter(sec =>
+        sec.id !== idSeccion && !materia.seccionesExcluidas.includes(sec.id)
+    );
+    if (restantes.length === 0) {
+        return { exito: false, mensaje: "No se pueden excluir todas las secciones de una materia" };
     }
 
     materia.seccionesFijadas = materia.seccionesFijadas.filter(id => id !== idSeccion);
@@ -184,4 +196,13 @@ function excluirSeccion(codigoMateria, idSeccion) {
     if (!materia.seccionesExcluidas.includes(idSeccion)) {
         materia.seccionesExcluidas.push(idSeccion);
     }
+    return { exito: true, mensaje: `Sección ${idSeccion} excluida` };
+}
+
+// vuelve a considerar una seccion que estaba excluida
+function incluirSeccion(codigoMateria, idSeccion) {
+    const materia = materiasSeleccionadas.find(m => m.codigo === codigoMateria);
+    if (!materia) return;
+
+    materia.seccionesExcluidas = materia.seccionesExcluidas.filter(id => id !== idSeccion);
 }

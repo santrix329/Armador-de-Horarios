@@ -398,6 +398,27 @@ body {
     font-weight: 600;
 }
 
+/* ---------- panel de seleccion: estados de las secciones ---------- */
+
+.btn-alternar[aria-pressed="true"] {
+    background: var(--acento);
+    color: #fff;
+}
+
+.seccion-excluida .seccion-seleccion-info {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.seccion-descartada .seccion-seleccion-info {
+    opacity: 0.6;
+}
+
+.seccion-fijada {
+    border-left: 4px solid var(--acento);
+    padding-left: 0.5rem;
+}
+
 /* en pantallas estrechas cada sesion se apila en una columna */
 @media (max-width: 640px) {
     body {
