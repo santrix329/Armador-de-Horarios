@@ -1,57 +1,71 @@
-/* 
- * estilos para impresion o exportacion a pdf de los horarios
+/*
+ * estilos para impresion o exportacion a pdf del horario definitivo
+ * se imprime solo la cabecera de la aplicacion y la vista de resumen, sin controles
  */
 @media print {
-    /* Ocultar elementos innecesarios para la impresion */
-    body * {
-        visibility: hidden;
+    @page {
+        margin: 1cm;
     }
 
-    /* Mostrar unicamente la seccion de resultados y la rejilla del horario */
-    #seccion-resultados, 
-    #seccion-resultados *,
-    .rejilla,
-    .rejilla * {
-        visibility: visible;
-    }
-
-    /* Ajustar la posicion para que el horario ocupe toda la hoja */
-    #seccion-resultados {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 0;
+    body {
         background: #ffffff !important;
+        padding: 0;
     }
 
-    /* Ocultar explícitamente botones, formularios, filtros y catálogos */
-    button, 
-    .btn, 
-    input, 
-    select, 
-    footer, 
-    .filtros-container,
-    .catalogo-seccion,
-    #seccion-preferencias,
-    #seccion-formulario {
+    /* todas las secciones de trabajo se ocultan; queda solo el resumen */
+    #seccion-catalogo,
+    #seccion-seleccion,
+    #seccion-resultados,
+    #seccion-formulario,
+    footer {
         display: none !important;
     }
 
-    /* Forzar que la rejilla se imprima con bordes limpios y claros */
+    /* ningun control tiene sentido en papel */
+    button,
+    input,
+    select,
+    .aviso {
+        display: none !important;
+    }
+
+    #seccion-resumen {
+        display: block !important;
+    }
+
+    /* la rejilla se ajusta al ancho de la hoja y no se parte entre paginas */
+    .rejilla-desplazable {
+        overflow: visible;
+    }
+
     .rejilla {
         border: 1px solid #334155 !important;
         box-shadow: none !important;
         width: 100% !important;
-        background-color: #ffffff !important;
+        min-width: 0 !important;
+        break-inside: avoid;
     }
 
-    /* Mantener los colores de fondo de las materias impresas si el navegador lo permite */
-    .sesion-rejilla {
+    /* mantener los colores de las materias si el navegador lo permite */
+    .sesion-rejilla,
+    .rejilla-fondo-dia,
+    .rejilla-header-dia {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
+    }
+
+    .sesion-rejilla {
         border: 1px solid #0f172a !important;
         box-shadow: none !important;
+    }
+
+    .tabla-resumen {
+        break-inside: avoid;
+        margin-top: 1rem;
+    }
+
+    .tabla-resumen th,
+    .tabla-resumen td {
+        border: 1px solid #334155 !important;
     }
 }

@@ -755,6 +755,61 @@ div.sesion-rejilla {
     margin: 0 0 0.5rem;
 }
 
+/* ---------- resumen del horario definitivo ---------- */
+
+#seccion-resumen {
+    margin-top: 2rem;
+}
+
+#titulo-resumen:focus {
+    outline: none;
+}
+
+.tabla-resumen {
+    width: 100%;
+    margin-top: 1.5rem;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: var(--radio);
+    overflow: hidden;
+    font-size: 0.9rem;
+}
+
+.tabla-resumen caption {
+    text-align: left;
+    font-weight: 700;
+    padding-bottom: 0.5rem;
+}
+
+.tabla-resumen th,
+.tabla-resumen td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+    vertical-align: top;
+}
+
+.tabla-resumen thead th {
+    background: var(--superficie);
+}
+
+.tabla-resumen tfoot th,
+.tabla-resumen tfoot td {
+    font-weight: 700;
+    border-bottom: 0;
+}
+
+.lista-celda {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* en pantallas estrechas la tabla se desplaza de lado */
+#tabla-resumen-materias {
+    overflow-x: auto;
+}
+
 /* quien prefiera menos movimiento ve los cambios sin animacion */
 @media (prefers-reduced-motion: reduce) {
     .entra-desde-derecha,
