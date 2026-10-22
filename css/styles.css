@@ -436,6 +436,18 @@ body {
     padding-left: 0.5rem;
 }
 
+/* materias que chocan por completo con otra de la seleccion */
+.item-incompatible {
+    border-left: 4px solid var(--error);
+    padding-left: 0.5rem;
+}
+
+.item-seleccion-alerta {
+    color: var(--error);
+    font-weight: 600;
+    margin: 0.25rem 0;
+}
+
 /* en pantallas estrechas cada sesion se apila en una columna */
 @media (max-width: 640px) {
     body {

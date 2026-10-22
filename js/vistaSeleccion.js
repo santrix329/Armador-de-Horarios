@@ -107,6 +107,9 @@ function renderizarSeleccion() {
     document.getElementById("resumen-seleccion").textContent =
         `${materias.length} ${etiquetaMaterias} · ${calcularTotalUc()} / ${obtenerTopeUc()} UC`;
 
+    const pares = obtenerMateriasIncompatiblesSeleccionadas();
+    renderizarIncompatibles(pares);
+
     if (materias.length === 0) {
         lista.replaceChildren(
             crearElemento("li", "estado-vacio", "Aún no has agregado materias. Usa el botón \"Agregar\" del catálogo.")
@@ -114,13 +117,53 @@ function renderizarSeleccion() {
         return;
     }
 
-    lista.replaceChildren(...materias.map(crearItemSeleccion));
+    lista.replaceChildren(...materias.map(materia => crearItemSeleccion(materia, pares)));
+}
+
+// "MAT-101 (Cálculo I) y FIS-101 (Física I)"
+function describirParIncompatible(par) {
+    const nombre = codigo => {
+        const materia = obtenerMateriaPorCodigo(codigo);
+        return materia ? materia.nombre : codigo;
+    };
+    return `${par.materia1} (${nombre(par.materia1)}) y ${par.materia2} (${nombre(par.materia2)})`;
+}
+
+// recuadro con los pares de materias que no pueden cursarse juntas
+function renderizarIncompatibles(pares) {
+    const caja = document.getElementById("incompatibles-seleccion");
+
+    if (pares.length === 0) {
+        caja.replaceChildren();
+        caja.hidden = true;
+        return;
+    }
+
+    const lista = crearElemento("ul");
+    pares.forEach(par => lista.append(crearElemento("li", "", describirParIncompatible(par))));
+
+    caja.replaceChildren(
+        crearElemento("strong", "", "Materias incompatibles"),
+        crearElemento("p", "", "Todas las secciones disponibles de una chocan con todas las de la otra, así que no pueden cursarse juntas:"),
+        lista
+    );
+    caja.hidden = false;
+}
+
+// codigos de las materias que chocan por completo con la indicada
+function obtenerIncompatiblesDe(codigo, pares) {
+    return pares
+        .filter(par => par.materia1 === codigo || par.materia2 === codigo)
+        .map(par => (par.materia1 === codigo ? par.materia2 : par.materia1));
 }
 
 // tarjeta de una materia seleccionada
-function crearItemSeleccion(materia) {
+function crearItemSeleccion(materia, pares = []) {
     const item = crearElemento("li", "item-seleccion");
     item.dataset.codigo = materia.codigo;
+
+    const incompatibles = obtenerIncompatiblesDe(materia.codigo, pares);
+    item.classList.toggle("item-incompatible", incompatibles.length > 0);
 
     const encabezado = crearElemento("div", "item-seleccion-encabezado");
     const titulo = crearElemento("p", "item-seleccion-titulo");
@@ -134,7 +177,13 @@ function crearItemSeleccion(materia) {
     botonQuitar.setAttribute("aria-label", `Quitar ${materia.codigo} de la selección`);
 
     encabezado.append(titulo, botonQuitar);
-    item.append(encabezado, crearDetalleSecciones(materia));
+    item.append(encabezado);
+
+    if (incompatibles.length > 0) {
+        item.append(crearElemento("p", "item-seleccion-alerta", `Choca por completo con ${incompatibles.join(", ")}.`));
+    }
+
+    item.append(crearDetalleSecciones(materia));
     return item;
 }
 
