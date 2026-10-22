@@ -12,6 +12,16 @@
         padding: 0;
     }
 
+    /* la cabecera se imprime sin fondo: muchos navegadores no imprimen fondos y el texto blanco desapareceria */
+    header {
+        background: none !important;
+        color: #000000 !important;
+        padding: 0 0 0.5rem !important;
+        border-bottom: 2px solid #000000;
+        border-radius: 0 !important;
+        margin-bottom: 1rem !important;
+    }
+
     /* todas las secciones de trabajo se ocultan; queda solo el resumen */
     #seccion-catalogo,
     #seccion-seleccion,
@@ -29,21 +39,47 @@
         display: none !important;
     }
 
-    #seccion-resumen {
+    /* el resumen se imprime solo si ya se eligio un horario definitivo */
+    #seccion-resumen:not([hidden]) {
         display: block !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        background: none !important;
     }
 
-    /* la rejilla se ajusta al ancho de la hoja y no se parte entre paginas */
+    #seccion-resumen h2 {
+        margin: 0 0 0.5rem;
+    }
+
     .rejilla-desplazable {
         overflow: visible;
     }
 
+    /* en pantalla cada minuto mide 1.4 px y la rejilla no cabe en una hoja:
+       al imprimir las filas miden el 60% y las lineas de hora se recalculan con la misma proporcion */
     .rejilla {
+        --alto-fila-impresion: calc(var(--alto-fila) * 0.6);
+        --alto-hora-impresion: calc(var(--filas-por-hora) * (var(--alto-fila-impresion) + 1px));
+        grid-template-rows: auto repeat(var(--filas), var(--alto-fila-impresion)) !important;
         border: 1px solid #334155 !important;
         box-shadow: none !important;
         width: 100% !important;
         min-width: 0 !important;
-        break-inside: avoid;
+        margin-top: 0.5rem !important;
+    }
+
+    .rejilla-fondo-dia {
+        background-image: repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent calc(var(--alto-hora-impresion) - 1px),
+            #cbd5e1 calc(var(--alto-hora-impresion) - 1px),
+            #cbd5e1 var(--alto-hora-impresion)
+        ) !important;
+    }
+
+    .rejilla-header-dia {
+        padding: 4px !important;
     }
 
     /* mantener los colores de las materias si el navegador lo permite */
@@ -57,15 +93,20 @@
     .sesion-rejilla {
         border: 1px solid #0f172a !important;
         box-shadow: none !important;
+        padding: 1px 4px !important;
+        font-size: 0.6rem !important;
+        line-height: 1.1;
     }
 
     .tabla-resumen {
         break-inside: avoid;
         margin-top: 1rem;
+        font-size: 0.8rem;
     }
 
     .tabla-resumen th,
     .tabla-resumen td {
         border: 1px solid #334155 !important;
+        padding: 0.3rem 0.5rem;
     }
 }

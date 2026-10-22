@@ -44,7 +44,8 @@ function calcularEscalaRejilla() {
 // el angulo aureo (137.5 grados) separa los tonos para que dos materias vecinas no se parezcan
 function obtenerColorMateria(indice) {
     const tono = Math.round(indice * 137.5) % 360;
-    return `hsl(${tono} 55% 36%)`;
+    // luminosidad baja para que el texto blanco contraste bien incluso en tonos amarillos
+    return `hsl(${tono} 55% 30%)`;
 }
 
 // crea el elemento de una sesion; si hay alSeleccionar es un boton que abre su detalle
@@ -93,6 +94,8 @@ function renderizarRejilla(contenedor, horario, alSeleccionar = null, claseAnima
     rejilla.style.setProperty("--filas", escala.filas);
     rejilla.style.setProperty("--alto-fila", `${escala.minutosPorFila * PIXELES_POR_MINUTO - GROSOR_LINEA_REJILLA}px`);
     rejilla.style.setProperty("--alto-hora", `${60 * PIXELES_POR_MINUTO}px`);
+    // print.css lo usa para recalcular las lineas de hora cuando achica las filas
+    rejilla.style.setProperty("--filas-por-hora", 60 / escala.minutosPorFila);
 
     const nodos = [crearElemento("div", "rejilla-header-dia rejilla-esquina")];
 
