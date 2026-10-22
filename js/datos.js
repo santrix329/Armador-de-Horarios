@@ -5,6 +5,16 @@ let materiasManuales = [];
 // dias validos para una sesion, en el orden en que se muestran
 const DIAS_SEMANA = ["LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
 
+// nombre completo de cada dia para los encabezados y el detalle
+const NOMBRES_DIAS = {
+    LUN: "Lunes",
+    MAR: "Martes",
+    MIE: "Miércoles",
+    JUE: "Jueves",
+    VIE: "Viernes",
+    SAB: "Sábado"
+};
+
 // Retorna todos los bloques horarios del catálogo oficial
 function obtenerBloques() {
     return BLOQUES;

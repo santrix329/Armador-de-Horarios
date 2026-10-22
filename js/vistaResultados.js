@@ -16,10 +16,19 @@ let resultadosDesactualizados = false;
 // cambia la generacion, un filtro o el orden, no en cada clic de la rejilla
 let resultadosVisibles = [];
 
+// posicion, dentro de resultadosVisibles, del horario que muestra la rejilla
+let indiceResultado = 0;
+
+// boton de sesion que abrio el detalle, para devolverle el foco al cerrarlo
+let elementoQueAbrioDetalle = null;
+
+// cada vez que cambia la lista se vuelve a la primera opcion
 function recalcularVisibles() {
     resultadosVisibles = resultadosGenerados === null
         ? []
         : ordenarHorarios(filtrarHorarios(resultadosGenerados));
+    indiceResultado = 0;
+    cerrarDetalleSesion();
 }
 
 // resume la seleccion completa en un texto: cualquier campo que cambie
@@ -74,6 +83,7 @@ function renderizarResultados() {
     const resumen = document.getElementById("resumen-resultados");
     const detalle = document.getElementById("detalle-resultados");
     detalle.replaceChildren();
+    actualizarVistaResultado();
 
     // los filtros solo tienen sentido si hay horarios que filtrar
     const hayResultados = resultadosGenerados !== null && resultadosGenerados.length > 0;
@@ -191,6 +201,106 @@ function quitarFiltros() {
     renderizarResultados();
 }
 
+/*
+ * vista de un resultado: rejilla, navegacion, metricas y detalle de la sesion
+ */
+
+// muestra el resultado actual; claseAnimacion indica desde que lado entra la rejilla
+function actualizarVistaResultado(claseAnimacion = "") {
+    const vista = document.getElementById("vista-resultado");
+
+    if (resultadosVisibles.length === 0) {
+        vista.hidden = true;
+        return;
+    }
+
+    vista.hidden = false;
+    const horario = resultadosVisibles[indiceResultado];
+
+    renderizarRejilla(document.getElementById("contenedor-rejilla"), horario, abrirDetalleSesion, claseAnimacion);
+    renderizarMetricas(horario);
+
+    document.getElementById("posicion-resultado").textContent =
+        `Opción ${indiceResultado + 1} de ${resultadosVisibles.length}`;
+    document.getElementById("boton-anterior").disabled = indiceResultado === 0;
+    document.getElementById("boton-siguiente").disabled = indiceResultado === resultadosVisibles.length - 1;
+}
+
+// avanza (+1) o retrocede (-1) entre los resultados visibles
+function irAResultado(desplazamiento) {
+    const nuevoIndice = indiceResultado + desplazamiento;
+    if (nuevoIndice < 0 || nuevoIndice >= resultadosVisibles.length) return;
+
+    indiceResultado = nuevoIndice;
+    cerrarDetalleSesion();
+    actualizarVistaResultado(desplazamiento > 0 ? "entra-desde-derecha" : "entra-desde-izquierda");
+
+    // si el boton pulsado quedo deshabilitado (primera o ultima opcion), el foco pasa al otro
+    const anterior = document.getElementById("boton-anterior");
+    const siguiente = document.getElementById("boton-siguiente");
+    if (anterior.disabled && !siguiente.disabled) siguiente.focus();
+    if (siguiente.disabled && !anterior.disabled) anterior.focus();
+}
+
+function renderizarMetricas(horario) {
+    const metricas = calcularMetricas(horario);
+    const filas = [
+        ["Días de asistencia", String(metricas.diasAsistencia)],
+        ["Horas muertas", formatearDuracion(metricas.minutosMuertos)],
+        ["Entrada más temprana", convertirMinutosAHora(metricas.entradaMasTemprana)],
+        ["Salida más tardía", convertirMinutosAHora(metricas.salidaMasTardia)],
+        ["Salida promedio", convertirMinutosAHora(metricas.salidaPromedio)]
+    ];
+
+    document.getElementById("metricas-resultado").replaceChildren(
+        ...filas.flatMap(([termino, valor]) => [crearElemento("dt", "", termino), crearElemento("dd", "", valor)])
+    );
+}
+
+// al pulsar una sesion de la rejilla se muestra su detalle completo
+function abrirDetalleSesion({ materia, seccion, sesion, horas }) {
+    document.getElementById("detalle-sesion-titulo").textContent = `${materia.codigo} · ${materia.nombre}`;
+
+    const filas = [
+        ["Sección", seccion.id],
+        ["Profesor", seccion.profesor],
+        ["Día", NOMBRES_DIAS[sesion.dia]],
+        ["Horario", `${horas.inicio} – ${horas.fin}`],
+        ["Aula", sesion.aula],
+        ["Unidades de crédito", String(materia.uc)]
+    ];
+    document.getElementById("detalle-sesion-datos").replaceChildren(
+        ...filas.flatMap(([termino, valor]) => [crearElemento("dt", "", termino), crearElemento("dd", "", valor)])
+    );
+
+    elementoQueAbrioDetalle = document.activeElement;
+    document.getElementById("detalle-sesion").classList.add("abierto");
+    document.getElementById("boton-cerrar-detalle").focus();
+}
+
+function cerrarDetalleSesion() {
+    const panel = document.getElementById("detalle-sesion");
+    if (!panel.classList.contains("abierto")) return;
+
+    panel.classList.remove("abierto");
+    // solo se devuelve el foco si el usuario estaba dentro del detalle
+    if (panel.contains(document.activeElement) && elementoQueAbrioDetalle && elementoQueAbrioDetalle.isConnected) {
+        elementoQueAbrioDetalle.focus();
+    }
+    elementoQueAbrioDetalle = null;
+}
+
+// flechas izquierda y derecha cambian de opcion, salvo dentro de un control de formulario
+function manejarTeclaVistaResultado(evento) {
+    if (["INPUT", "SELECT", "TEXTAREA"].includes(evento.target.tagName)) return;
+
+    if (evento.key === "ArrowLeft") {
+        irAResultado(-1);
+    } else if (evento.key === "ArrowRight") {
+        irAResultado(1);
+    }
+}
+
 // explica por que no hubo resultados: incompatibles si los hay, o una sugerencia general
 function crearDetalleSinResultados() {
     const pares = obtenerMateriasIncompatiblesSeleccionadas();
@@ -210,5 +320,14 @@ function iniciarResultados() {
     document.getElementById("boton-generar").addEventListener("click", manejarGenerar);
     document.getElementById("filtros-resultados").addEventListener("change", manejarCambioFiltro);
     document.getElementById("boton-quitar-filtros").addEventListener("click", quitarFiltros);
+
+    document.getElementById("boton-anterior").addEventListener("click", () => irAResultado(-1));
+    document.getElementById("boton-siguiente").addEventListener("click", () => irAResultado(1));
+    document.getElementById("vista-resultado").addEventListener("keydown", manejarTeclaVistaResultado);
+    document.getElementById("boton-cerrar-detalle").addEventListener("click", cerrarDetalleSesion);
+    document.addEventListener("keydown", evento => {
+        if (evento.key === "Escape") cerrarDetalleSesion();
+    });
+
     renderizarResultados();
 }

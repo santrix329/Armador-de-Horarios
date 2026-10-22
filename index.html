@@ -76,7 +76,25 @@
             </fieldset>
             <p id="resumen-resultados" class="resumen-resultados" aria-live="polite"></p>
             <div id="detalle-resultados"></div>
-            <div id="contenedor-rejilla"></div>
+            <div id="vista-resultado" class="vista-resultado" hidden>
+                <nav class="navegacion-resultados" aria-label="Navegación entre resultados">
+                    <button id="boton-anterior" type="button" class="btn-secundario">← Anterior</button>
+                    <span id="posicion-resultado" class="posicion-resultado" aria-live="polite"></span>
+                    <button id="boton-siguiente" type="button" class="btn-secundario">Siguiente →</button>
+                </nav>
+                <div class="vista-resultado-cuerpo">
+                    <div id="contenedor-rejilla"></div>
+                    <aside class="panel-metricas">
+                        <h3>Métricas de esta opción</h3>
+                        <dl id="metricas-resultado" class="metricas-resultado"></dl>
+                        <div id="detalle-sesion" class="detalle-sesion" aria-live="polite">
+                            <h4 id="detalle-sesion-titulo"></h4>
+                            <dl id="detalle-sesion-datos"></dl>
+                            <button id="boton-cerrar-detalle" type="button" class="btn-texto">Cerrar detalle</button>
+                        </div>
+                    </aside>
+                </div>
+            </div>
         </section>
         <section id="seccion-formulario">
             <h2>Materias manuales</h2>
@@ -118,6 +136,7 @@
     <script src="js/validaciones.js"></script>
     <script src="js/formulario.js"></script>
     <script src="js/vistaSeleccion.js"></script>
+    <script src="js/rejilla.js"></script>
     <script src="js/vistaResultados.js"></script>
 
 
