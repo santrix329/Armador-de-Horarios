@@ -7,6 +7,7 @@
     
     <!--Enlace a la hoja de estilos principal -->
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/print.css" media="print">
 </head>
 <body>
 
@@ -81,6 +82,12 @@
         <section class="welcome-section">
             <h2>Bienvenido al sistema</h2>
             <p>Cargando catálogo de materias y bloques horarios...</p>
+        </section>
+        <section id="seccion-resumen" style="display: none;">
+            <h2>Horario Definitivo y Resumen</h2>
+            <button id="btn-imprimir" type="button" class="btn-secundario">Imprimir Horario</button>
+            <div id="vista-resumen-rejilla"></div>
+            <div id="tabla-resumen-materias"></div>
         </section>
     </main>
 
