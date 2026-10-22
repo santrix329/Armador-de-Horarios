@@ -49,11 +49,21 @@ function obtenerResultadosVisibles() {
     return filtrarHorarios(resultadosGenerados);
 }
 
+// indica si hay al menos un filtro de preferencias aplicado
+function hayFiltrosActivos() {
+    const preferencias = obtenerPreferencias();
+    return preferencias.diasLibres.length > 0 || preferencias.horaMinEntrada !== "" || preferencias.horaMaxSalida !== "";
+}
+
 // texto de estado de la seccion segun haya o no resultados vigentes
 function renderizarResultados() {
     const resumen = document.getElementById("resumen-resultados");
     const detalle = document.getElementById("detalle-resultados");
     detalle.replaceChildren();
+
+    // los filtros solo tienen sentido si hay horarios que filtrar
+    const hayResultados = resultadosGenerados !== null && resultadosGenerados.length > 0;
+    document.getElementById("filtros-resultados").disabled = !hayResultados;
 
     if (resultadosGenerados === null) {
         resumen.textContent = resultadosDesactualizados
@@ -71,8 +81,86 @@ function renderizarResultados() {
     }
 
     const total = resultadosGenerados.length;
-    resumen.textContent = `${total} ${total === 1 ? "combinación válida" : "combinaciones válidas"}.`;
-    resumen.className = "resumen-resultados estado-exito";
+    const textoTotal = `${total} ${total === 1 ? "combinación válida" : "combinaciones válidas"}`;
+
+    if (!hayFiltrosActivos()) {
+        resumen.textContent = `${textoTotal}.`;
+        resumen.className = "resumen-resultados estado-exito";
+        return;
+    }
+
+    // la cantidad se actualiza al aplicar o retirar cada filtro
+    const visibles = obtenerResultadosVisibles().length;
+    resumen.textContent = `${textoTotal} · ${visibles} ${visibles === 1 ? "cumple" : "cumplen"} tus preferencias.`;
+
+    if (visibles === 0) {
+        resumen.className = "resumen-resultados estado-error";
+        detalle.append(crearElemento("p", "", "Ningún horario cumple todas tus preferencias. Prueba quitar algún filtro."));
+    } else {
+        resumen.className = "resumen-resultados estado-exito";
+    }
+}
+
+// fichas de dias y opciones de hora; todo sale de DIAS_SEMANA y BLOQUES
+function construirControlesFiltros() {
+    const dias = document.getElementById("opciones-dias-libres");
+    dias.replaceChildren(...DIAS_SEMANA.map(dia => {
+        const ficha = crearElemento("label", "ficha-dia");
+        const casilla = document.createElement("input");
+        casilla.type = "checkbox";
+        casilla.value = dia;
+        ficha.append(casilla, crearElemento("span", "", dia));
+        return ficha;
+    }));
+
+    llenarSelectorHoras("filtro-entrada", obtenerHorasDeEntrada());
+    llenarSelectorHoras("filtro-salida", obtenerHorasDeSalida());
+}
+
+function llenarSelectorHoras(idSelector, horas) {
+    document.getElementById(idSelector).replaceChildren(
+        new Option("Sin límite", ""),
+        ...horas.map(hora => new Option(hora, hora))
+    );
+}
+
+function leerControlesFiltros() {
+    return {
+        diasLibres: [...document.querySelectorAll("#opciones-dias-libres input:checked")].map(c => c.value),
+        horaMinEntrada: document.getElementById("filtro-entrada").value,
+        horaMaxSalida: document.getElementById("filtro-salida").value
+    };
+}
+
+// pone los controles igual que los filtros activos (por ejemplo, tras rechazar un cambio)
+function sincronizarControlesFiltros() {
+    const preferencias = obtenerPreferencias();
+    document.querySelectorAll("#opciones-dias-libres input").forEach(casilla => {
+        casilla.checked = preferencias.diasLibres.includes(casilla.value);
+    });
+    document.getElementById("filtro-entrada").value = preferencias.horaMinEntrada;
+    document.getElementById("filtro-salida").value = preferencias.horaMaxSalida;
+}
+
+// un solo listener en el fieldset atiende las casillas y los dos selectores
+function manejarCambioFiltro() {
+    const resultado = actualizarPreferencias(leerControlesFiltros());
+
+    if (!resultado.exito) {
+        sincronizarControlesFiltros();
+        mostrarAviso("aviso-resultados", resultado.mensaje, "error");
+        return;
+    }
+
+    ocultarAviso("aviso-resultados");
+    renderizarResultados();
+}
+
+function quitarFiltros() {
+    reiniciarPreferencias();
+    sincronizarControlesFiltros();
+    ocultarAviso("aviso-resultados");
+    renderizarResultados();
 }
 
 // explica por que no hubo resultados: incompatibles si los hay, o una sugerencia general
@@ -90,6 +178,9 @@ function crearDetalleSinResultados() {
 
 // punto de entrada de la seccion
 function iniciarResultados() {
+    construirControlesFiltros();
     document.getElementById("boton-generar").addEventListener("click", manejarGenerar);
+    document.getElementById("filtros-resultados").addEventListener("change", manejarCambioFiltro);
+    document.getElementById("boton-quitar-filtros").addEventListener("click", quitarFiltros);
     renderizarResultados();
 }

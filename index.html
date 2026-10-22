@@ -52,6 +52,23 @@
             <h2>Horarios posibles</h2>
             <button id="boton-generar" type="button" class="btn-primario">Generar horarios</button>
             <p id="aviso-resultados" class="aviso" role="status" hidden></p>
+            <!-- disabled desactiva todos los controles de adentro hasta que haya resultados -->
+            <fieldset id="filtros-resultados" class="filtros-resultados" disabled>
+                <legend>Preferencias</legend>
+                <div class="filtro-dias">
+                    <span id="titulo-dias-libres" class="filtro-titulo">Días libres</span>
+                    <div id="opciones-dias-libres" class="fichas-bloques" role="group" aria-labelledby="titulo-dias-libres"></div>
+                </div>
+                <div class="campo-form">
+                    <label for="filtro-entrada">Entrar desde</label>
+                    <select id="filtro-entrada"></select>
+                </div>
+                <div class="campo-form">
+                    <label for="filtro-salida">Salir a más tardar</label>
+                    <select id="filtro-salida"></select>
+                </div>
+                <button id="boton-quitar-filtros" type="button" class="btn-texto">Quitar filtros</button>
+            </fieldset>
             <p id="resumen-resultados" class="resumen-resultados" aria-live="polite"></p>
             <div id="detalle-resultados"></div>
             <div id="contenedor-rejilla"></div>

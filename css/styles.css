@@ -328,12 +328,15 @@ body {
     gap: 0.35rem;
 }
 
-.ficha-bloque {
+/* las fichas de dias de los filtros comparten el mismo aspecto */
+.ficha-bloque,
+.ficha-dia {
     position: relative;
 }
 
 /* la casilla real sigue ahi para el teclado y los lectores de pantalla, pero invisible */
-.ficha-bloque input {
+.ficha-bloque input,
+.ficha-dia input {
     position: absolute;
     inset: 0;
     margin: 0;
@@ -341,7 +344,8 @@ body {
     cursor: pointer;
 }
 
-.ficha-bloque span {
+.ficha-bloque span,
+.ficha-dia span {
     display: inline-block;
     padding: 0.3rem 0.65rem;
     border: 1.5px solid var(--borde);
@@ -352,17 +356,20 @@ body {
     transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.ficha-bloque:hover span {
+.ficha-bloque:hover span,
+.ficha-dia:hover span {
     border-color: var(--acento);
 }
 
-.ficha-bloque input:checked + span {
+.ficha-bloque input:checked + span,
+.ficha-dia input:checked + span {
     background: var(--acento);
     border-color: var(--acento);
     color: #fff;
 }
 
-.ficha-bloque input:focus-visible + span {
+.ficha-bloque input:focus-visible + span,
+.ficha-dia input:focus-visible + span {
     outline: 3px solid var(--foco);
     outline-offset: 2px;
 }
@@ -415,6 +422,63 @@ body {
     align-items: end;
 }
 
+/* ---------- panel de seleccion: estructura minima (el diseno final es aparte) ---------- */
+
+.lista-seleccion,
+.lista-secciones-seleccion {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.75rem;
+}
+
+.item-seleccion {
+    background: var(--superficie);
+    border-radius: var(--radio);
+    padding: 0.75rem 1rem;
+}
+
+.item-seleccion-encabezado,
+.seccion-seleccion {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.item-seleccion-titulo {
+    margin: 0;
+}
+
+.secciones-seleccion summary {
+    cursor: pointer;
+    margin-top: 0.5rem;
+    color: var(--acento-oscuro);
+    font-weight: 600;
+}
+
+.lista-secciones-seleccion {
+    margin-top: 0.5rem;
+}
+
+/* nombre, profesor y horario uno debajo del otro */
+.seccion-seleccion-info {
+    display: grid;
+    gap: 0.1rem;
+}
+
+.seccion-seleccion-horario {
+    color: var(--texto-suave);
+    font-size: 0.9rem;
+}
+
+.seccion-seleccion-acciones {
+    display: flex;
+    gap: 0.4rem;
+}
+
 /* ---------- panel de seleccion: estados de las secciones ---------- */
 
 .btn-alternar[aria-pressed="true"] {
@@ -434,6 +498,41 @@ body {
 .seccion-fijada {
     border-left: 4px solid var(--acento);
     padding-left: 0.5rem;
+}
+
+/* ---------- filtros de preferencias ---------- */
+
+.filtros-resultados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    align-items: end;
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--superficie);
+    transition: opacity 0.2s;
+}
+
+/* sin resultados los filtros se ven apagados y no responden */
+.filtros-resultados:disabled {
+    opacity: 0.5;
+}
+
+.filtros-resultados legend {
+    font-weight: 700;
+    padding: 0 0.4rem;
+}
+
+.filtro-dias {
+    display: grid;
+    gap: 0.3rem;
+}
+
+.filtro-titulo {
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 /* materias que chocan por completo con otra de la seleccion */
