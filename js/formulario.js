@@ -409,6 +409,7 @@ function manejarEnvioFormulario(evento) {
 
     reiniciarFormulario();
     refrescarCatalogo();
+    refrescarPanelSeleccion();
     mostrarAviso("aviso-form-materia", mensaje, "exito");
 }
 
@@ -482,6 +483,7 @@ function eliminarMateriaDesdeCatalogo(codigo) {
         reiniciarFormulario();
     }
     refrescarCatalogo();
+    refrescarPanelSeleccion();
     mostrarAviso("aviso-catalogo", `La materia ${codigo} fue eliminada.`, "info");
 }
 

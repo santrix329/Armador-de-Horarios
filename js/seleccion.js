@@ -36,6 +36,11 @@ function cambiarTopeUc(nuevoTope) {
     return { exito: true, mensaje: `Tope de UC actualizado a ${tope}` };
 }
 
+// indica si una materia ya forma parte de la seleccion
+function estaSeleccionada(codigoMateria) {
+    return materiasSeleccionadas.some(m => m.codigo === codigoMateria);
+}
+
 // Funcion para calcular cuantas UC lleva acumuladas el usuario
 function calcularTotalUc() {
     let total = 0;

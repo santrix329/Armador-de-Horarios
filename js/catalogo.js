@@ -88,6 +88,14 @@ function renderizarCatalogo(contenedorId, listaMaterias = obtenerTodasLasMateria
         `;
 
         tarjeta.appendChild(botonDetalles);
+
+        // el texto y el estado del boton los decide vistaSeleccion.js segun la seleccion actual
+        const botonAgregar = crearBoton("Agregar", "agregar-materia", "btn-primario");
+        botonAgregar.dataset.codigo = materia.codigo;
+        actualizarBotonAgregar(botonAgregar);
+        botonAgregar.addEventListener("click", () => manejarAgregarMateria(materia.codigo));
+        tarjeta.appendChild(botonAgregar);
+
         // solo las materias manuales se pueden editar o eliminar
         if (esUnaMateriaManual) {
             tarjeta.appendChild(crearAccionesMateriaManual(materia.codigo));
