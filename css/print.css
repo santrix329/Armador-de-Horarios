@@ -1,0 +1,57 @@
+/* 
+ * estilos para impresion o exportacion a pdf de los horarios
+ */
+@media print {
+    /* Ocultar elementos innecesarios para la impresion */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Mostrar unicamente la seccion de resultados y la rejilla del horario */
+    #seccion-resultados, 
+    #seccion-resultados *,
+    .rejilla,
+    .rejilla * {
+        visibility: visible;
+    }
+
+    /* Ajustar la posicion para que el horario ocupe toda la hoja */
+    #seccion-resultados {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: #ffffff !important;
+    }
+
+    /* Ocultar explícitamente botones, formularios, filtros y catálogos */
+    button, 
+    .btn, 
+    input, 
+    select, 
+    footer, 
+    .filtros-container,
+    .catalogo-seccion,
+    #seccion-preferencias,
+    #seccion-formulario {
+        display: none !important;
+    }
+
+    /* Forzar que la rejilla se imprima con bordes limpios y claros */
+    .rejilla {
+        border: 1px solid #334155 !important;
+        box-shadow: none !important;
+        width: 100% !important;
+        background-color: #ffffff !important;
+    }
+
+    /* Mantener los colores de fondo de las materias impresas si el navegador lo permite */
+    .sesion-rejilla {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        border: 1px solid #0f172a !important;
+        box-shadow: none !important;
+    }
+}
