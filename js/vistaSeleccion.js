@@ -17,6 +17,61 @@ function alCambiarSeleccion() {
 // porque esos cambios pueden alterar una materia que ya estaba seleccionada
 function refrescarPanelSeleccion() {
     renderizarSeleccion();
+    // una materia manual nueva puede traer un trimestre que antes no existia
+    actualizarOpcionesAtajo();
+}
+
+// las opciones del atajo salen de los trimestres que existen en los datos
+function actualizarOpcionesAtajo() {
+    const selector = document.getElementById("select-atajo");
+    const elegido = selector.value;
+    const trimestres = obtenerTrimestresDisponibles().map(String);
+
+    selector.replaceChildren(...trimestres.map(t => new Option(`Trimestre ${t}`, t)));
+    if (trimestres.includes(elegido)) {
+        selector.value = elegido;
+    }
+}
+
+// panel de configuracion: cambia el tope de uc
+function manejarEnvioTope(evento) {
+    evento.preventDefault();
+
+    const input = document.getElementById("input-tope");
+    const resultado = cambiarTopeUc(input.value);
+
+    if (!resultado.exito) {
+        input.setAttribute("aria-invalid", "true");
+        mostrarAviso("aviso-seleccion", `${resultado.mensaje}.`, "error");
+        input.focus();
+        return;
+    }
+
+    input.removeAttribute("aria-invalid");
+    mostrarAviso("aviso-seleccion", `${resultado.mensaje}.`, "exito");
+    renderizarSeleccion();
+}
+
+// atajo: agrega todas las materias de un trimestre o ninguna si se pasaria del tope
+function manejarEnvioAtajo(evento) {
+    evento.preventDefault();
+
+    const trimestre = document.getElementById("select-atajo").value;
+    const resultado = agregarTrimestreCompleto(trimestre);
+
+    if (!resultado.exito) {
+        mostrarAviso("aviso-seleccion", `${resultado.mensaje}. No se agregó ninguna materia.`, "error");
+        return;
+    }
+
+    if (resultado.agregadas === 0) {
+        mostrarAviso("aviso-seleccion", `Todas las materias del trimestre ${trimestre} ya estaban en tu selección.`, "info");
+        return;
+    }
+
+    const etiqueta = resultado.agregadas === 1 ? "materia" : "materias";
+    mostrarAviso("aviso-seleccion", `Se agregaron ${resultado.agregadas} ${etiqueta} del trimestre ${trimestre}.`, "exito");
+    alCambiarSeleccion();
 }
 
 // el boton "agregar" de una tarjeta refleja si la materia ya esta en la seleccion
@@ -222,5 +277,10 @@ function manejarClicSeleccion(evento) {
 // punto de entrada del panel: registra el listener una sola vez y pinta el estado inicial
 function iniciarPanelSeleccion() {
     document.getElementById("lista-seleccion").addEventListener("click", manejarClicSeleccion);
+    document.getElementById("form-tope").addEventListener("submit", manejarEnvioTope);
+    document.getElementById("form-atajo").addEventListener("submit", manejarEnvioAtajo);
+
+    document.getElementById("input-tope").value = obtenerTopeUc();
+    actualizarOpcionesAtajo();
     renderizarSeleccion();
 }

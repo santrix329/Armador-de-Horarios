@@ -29,6 +29,22 @@
             <h2>Mi selección</h2>
             <p id="resumen-seleccion" class="resumen-seleccion"></p>
             <p id="aviso-seleccion" class="aviso" role="status" hidden></p>
+            <div class="configuracion-seleccion">
+                <form id="form-tope" class="form-linea" novalidate>
+                    <div class="campo-form">
+                        <label for="input-tope">Tope de unidades de crédito</label>
+                        <input id="input-tope" type="number" min="1" step="1">
+                    </div>
+                    <button type="submit" class="btn-secundario">Guardar tope</button>
+                </form>
+                <form id="form-atajo" class="form-linea">
+                    <div class="campo-form">
+                        <label for="select-atajo">Agregar un trimestre completo</label>
+                        <select id="select-atajo"></select>
+                    </div>
+                    <button type="submit" class="btn-secundario">Agregar trimestre</button>
+                </form>
+            </div>
             <ul id="lista-seleccion" class="lista-seleccion"></ul>
         </section>
         <section id="seccion-formulario">

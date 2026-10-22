@@ -144,7 +144,12 @@ function agregarTrimestreCompleto(numeroTrimestre) {
         agregarMateriaSeleccionada(aAgregar[j].codigo);
     }
 
-    return { exito: true, mensaje: `Trimestre ${numeroTrimestre} agregado correctamente` };
+    // agregadas permite distinguir si el trimestre ya estaba completo en la seleccion
+    return {
+        exito: true,
+        mensaje: `Trimestre ${numeroTrimestre} agregado correctamente`,
+        agregadas: aAgregar.length
+    };
 }
 
 // Retorna las secciones que se consideran para una materia seleccionada:
