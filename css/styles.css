@@ -14,6 +14,7 @@
     --exito: #15803d;
     --exito-fondo: #dcfce7;
     --info-fondo: #e0f2fe;
+    --panel: #f8fafc;
     --radio: 10px;
     --sombra: 0 1px 3px rgb(15 23 42 / 0.1);
 }
@@ -825,6 +826,274 @@ div.sesion-rejilla {
 @media (max-width: 860px) {
     .vista-resultado-cuerpo {
         grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- cabecera ---------- */
+
+header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radio);
+    background: var(--acento);
+    color: #ffffff;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+    letter-spacing: 0.02em;
+}
+
+header p {
+    margin: 0;
+    opacity: 0.85;
+}
+
+/* ---------- distribucion general ---------- */
+
+/* catalogo a la izquierda y la seleccion fija a la derecha; el resto ocupa todo el ancho */
+#app-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+#app-container > section {
+    grid-column: 1 / -1;
+    background: var(--panel);
+    border-radius: var(--radio);
+    padding: 1rem 1.25rem;
+    box-shadow: var(--sombra);
+}
+
+#app-container > #seccion-catalogo {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+/* la seleccion acompana al usuario mientras recorre el catalogo */
+#app-container > #seccion-seleccion {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+}
+
+footer {
+    margin-top: 2rem;
+    text-align: center;
+    color: var(--texto-suave);
+}
+
+/* ---------- catalogo ---------- */
+
+#controles-catalogo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+#controles-catalogo label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+#controles-catalogo input,
+#controles-catalogo select {
+    font: inherit;
+    color: var(--texto);
+    background: #ffffff;
+    padding: 0.5rem 0.7rem;
+    border: 2px solid var(--borde);
+    border-radius: var(--radio);
+}
+
+#controles-catalogo select {
+    appearance: none;
+    padding-right: 2rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23475569' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    cursor: pointer;
+}
+
+#controles-catalogo input:hover,
+#controles-catalogo select:hover {
+    border-color: var(--acento);
+}
+
+#controles-catalogo input:focus-visible,
+#controles-catalogo select:focus-visible {
+    outline: 3px solid var(--foco);
+    outline-offset: 1px;
+}
+
+/* las tarjetas se acomodan solas en tantas columnas como quepan */
+#contenedor-catalogo {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+.tarjeta-materia {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #ffffff;
+    border-radius: var(--radio);
+    border-top: 4px solid var(--acento);
+    box-shadow: var(--sombra);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.tarjeta-materia:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgb(15 23 42 / 0.12);
+}
+
+/* las materias manuales se distinguen por color de borde, fondo e insignia */
+.tarjeta-materia.materia-manual {
+    border-top-color: var(--foco);
+    background: #fffbeb;
+}
+
+.materia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.materia-codigo {
+    font-family: ui-monospace, monospace;
+    font-weight: 700;
+}
+
+.badge-tipo {
+    margin-left: 0.35rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: var(--superficie);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.materia-manual .badge-tipo {
+    background: var(--foco);
+}
+
+.materia-uc {
+    font-weight: 700;
+}
+
+.materia-nombre {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.materia-trimestre {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 0.85rem;
+}
+
+.btn-detalles {
+    align-self: flex-start;
+    padding: 0.2rem 0;
+    border: 0;
+    background: none;
+    color: var(--acento);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.btn-detalles:hover {
+    color: var(--acento-oscuro);
+}
+
+.btn-detalles:focus-visible {
+    outline: 3px solid var(--foco);
+    outline-offset: 2px;
+}
+
+/* el detalle abre y cierra animando su altura: la fila pasa de 0fr a 1fr */
+.materia-detalles {
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition: grid-template-rows 0.25s ease, opacity 0.25s ease, visibility 0.25s;
+}
+
+.materia-detalles.oculto {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.materia-detalles-contenido {
+    min-height: 0;
+    overflow: hidden;
+    font-size: 0.85rem;
+}
+
+.materia-detalles-contenido h4 {
+    margin: 0.25rem 0;
+}
+
+.materia-detalles-contenido ul {
+    margin: 0;
+    padding-left: 1rem;
+}
+
+.aviso-tarjeta {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+/* estado vacio del catalogo y de la seleccion */
+.estado-vacio {
+    grid-column: 1 / -1;
+    padding: 1.5rem;
+    border: 2px dashed var(--borde);
+    border-radius: var(--radio);
+    color: var(--texto-suave);
+    text-align: center;
+    list-style: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .materia-detalles,
+    .tarjeta-materia {
+        transition: none;
+    }
+}
+
+@media (max-width: 960px) {
+    #app-container {
+        grid-template-columns: 1fr;
+    }
+
+    #app-container > #seccion-catalogo,
+    #app-container > #seccion-seleccion {
+        grid-column: 1;
+        grid-row: auto;
+        position: static;
+        max-height: none;
     }
 }
 
