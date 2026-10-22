@@ -12,6 +12,8 @@ function alCambiarSeleccion() {
     renderizarSeleccion();
     actualizarBotonesAgregar();
     verificarVigenciaResultados();
+    // con la seleccion distinta, los errores de tope en las tarjetas pueden haber dejado de valer
+    document.querySelectorAll(".aviso-tarjeta").forEach(aviso => aviso.remove());
 }
 
 // lo llama el formulario al registrar, editar o eliminar una materia manual,
@@ -88,12 +90,29 @@ function actualizarBotonesAgregar() {
     document.querySelectorAll('[data-accion="agregar-materia"]').forEach(actualizarBotonAgregar);
 }
 
+// muestra el error tambien dentro de la tarjeta, donde el usuario hizo clic,
+// porque el panel de seleccion puede estar fuera de la vista
+function mostrarErrorEnTarjeta(codigo, mensaje) {
+    const boton = document.querySelector(`[data-accion="agregar-materia"][data-codigo="${CSS.escape(codigo)}"]`);
+    if (!boton) return;
+
+    let aviso = boton.parentElement.querySelector(".aviso-tarjeta");
+    if (!aviso) {
+        aviso = crearElemento("p", "aviso aviso-error aviso-tarjeta");
+        aviso.setAttribute("role", "alert");
+        boton.after(aviso);
+    }
+    aviso.textContent = mensaje;
+}
+
 // se ejecuta al pulsar "agregar" en una tarjeta del catalogo
 function manejarAgregarMateria(codigo) {
     const resultado = agregarMateriaSeleccionada(codigo);
 
     if (!resultado.exito) {
-        mostrarAviso("aviso-seleccion", `No se agregó ${codigo}: ${resultado.mensaje}.`, "error");
+        const mensaje = `No se agregó ${codigo}: ${resultado.mensaje}.`;
+        mostrarAviso("aviso-seleccion", mensaje, "error");
+        mostrarErrorEnTarjeta(codigo, mensaje);
         return;
     }
 
