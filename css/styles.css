@@ -273,6 +273,13 @@ body {
     align-items: start;
 }
 
+/* el ancho de los campos de una sesion incluye borde y relleno, asi no se salen de su columna */
+.sesion-form .campo-form input,
+.sesion-form .campo-form select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .sesion-form-encabezado,
 .sesion-form > .error-sesion {
     grid-column: 1 / -1;
@@ -825,7 +832,7 @@ div.sesion-rejilla {
 
 @media (max-width: 860px) {
     .vista-resultado-cuerpo {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
@@ -856,31 +863,32 @@ header p {
 
 /* ---------- distribucion general ---------- */
 
-/* catalogo a la izquierda y la seleccion fija a la derecha; el resto ocupa todo el ancho */
+/* las secciones se apilan con separacion; minmax(0, 1fr) deja que la columna se encoja
+   en pantallas estrechas en vez de estirarse hasta el ancho de su contenido */
 #app-container {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
-    align-items: start;
 }
 
-#app-container > section {
-    grid-column: 1 / -1;
+#app-container section {
     background: var(--panel);
     border-radius: var(--radio);
     padding: 1rem 1.25rem;
     box-shadow: var(--sombra);
 }
 
-#app-container > #seccion-catalogo {
-    grid-column: 1;
-    grid-row: 1;
+/* catalogo a la izquierda y seleccion a la derecha */
+.zona-armado {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+    gap: 1.5rem;
+    align-items: start;
 }
 
-/* la seleccion acompana al usuario mientras recorre el catalogo */
-#app-container > #seccion-seleccion {
-    grid-column: 2;
-    grid-row: 1;
+/* la seleccion acompana al usuario mientras recorre el catalogo;
+   sticky solo actua dentro de su contenedor, asi que no invade los resultados */
+#seccion-seleccion {
     position: sticky;
     top: 1rem;
     max-height: calc(100vh - 2rem);
@@ -1084,14 +1092,11 @@ footer {
 }
 
 @media (max-width: 960px) {
-    #app-container {
-        grid-template-columns: 1fr;
+    .zona-armado {
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    #app-container > #seccion-catalogo,
-    #app-container > #seccion-seleccion {
-        grid-column: 1;
-        grid-row: auto;
+    #seccion-seleccion {
         position: static;
         max-height: none;
     }

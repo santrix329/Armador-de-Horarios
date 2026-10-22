@@ -20,6 +20,8 @@
     <!-- Contenedor principal de la aplicación -->
     <main id="app-container">
         <!-- Aquí se carga dinámicamente el catálogo, filtros y la rejilla mediante JavaScript -->
+        <!-- catalogo y seleccion lado a lado; la seleccion queda fija solo dentro de esta zona -->
+        <div class="zona-armado">
         <section id="seccion-catalogo">
             <h2>Catálogo de materias</h2>
             <div id="controles-catalogo"></div>
@@ -49,6 +51,7 @@
             <div id="incompatibles-seleccion" class="aviso aviso-error" aria-live="polite" hidden></div>
             <ul id="lista-seleccion" class="lista-seleccion"></ul>
         </section>
+        </div>
         <section id="seccion-resultados">
             <h2>Horarios posibles</h2>
             <button id="boton-generar" type="button" class="btn-primario">Generar horarios</button>
