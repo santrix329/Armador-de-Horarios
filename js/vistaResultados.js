@@ -12,6 +12,16 @@ let firmaResultados = "";
 // true cuando habia resultados y despues la seleccion cambio
 let resultadosDesactualizados = false;
 
+// resultados que pasan los filtros, ya ordenados; se recalcula solo cuando
+// cambia la generacion, un filtro o el orden, no en cada clic de la rejilla
+let resultadosVisibles = [];
+
+function recalcularVisibles() {
+    resultadosVisibles = resultadosGenerados === null
+        ? []
+        : ordenarHorarios(filtrarHorarios(resultadosGenerados));
+}
+
 // resume la seleccion completa en un texto: cualquier campo que cambie
 // (nombre, uc, secciones, fijadas, excluidas...) produce una firma distinta
 function calcularFirmaSeleccion() {
@@ -30,6 +40,7 @@ function verificarVigenciaResultados() {
 
     resultadosGenerados = null;
     resultadosDesactualizados = true;
+    recalcularVisibles();
     renderizarResultados();
 }
 
@@ -43,13 +54,13 @@ function manejarGenerar() {
     resultadosGenerados = generarHorarios();
     firmaResultados = calcularFirmaSeleccion();
     resultadosDesactualizados = false;
+    recalcularVisibles();
     renderizarResultados();
 }
 
-// horarios que pasan los filtros; es la lista que debe pintar la rejilla
+// horarios que pasan los filtros, en el orden elegido; es la lista que pinta la rejilla
 function obtenerResultadosVisibles() {
-    if (resultadosGenerados === null) return [];
-    return filtrarHorarios(resultadosGenerados);
+    return resultadosVisibles;
 }
 
 // indica si hay al menos un filtro de preferencias aplicado
@@ -118,6 +129,10 @@ function construirControlesFiltros() {
 
     llenarSelectorHoras("filtro-entrada", obtenerHorasDeEntrada());
     llenarSelectorHoras("filtro-salida", obtenerHorasDeSalida());
+
+    document.getElementById("orden-resultados").replaceChildren(
+        ...Object.entries(CRITERIOS_ORDEN).map(([valor, texto]) => new Option(texto, valor))
+    );
 }
 
 function llenarSelectorHoras(idSelector, horas) {
@@ -145,8 +160,15 @@ function sincronizarControlesFiltros() {
     document.getElementById("filtro-salida").value = preferencias.horaMaxSalida;
 }
 
-// un solo listener en el fieldset atiende las casillas y los dos selectores
-function manejarCambioFiltro() {
+// un solo listener en el fieldset atiende las casillas, los selectores de hora y el de orden
+function manejarCambioFiltro(evento) {
+    if (evento.target.id === "orden-resultados") {
+        cambiarCriterioOrden(evento.target.value);
+        recalcularVisibles();
+        renderizarResultados();
+        return;
+    }
+
     const resultado = actualizarPreferencias(leerControlesFiltros());
 
     if (!resultado.exito) {
@@ -156,13 +178,16 @@ function manejarCambioFiltro() {
     }
 
     ocultarAviso("aviso-resultados");
+    recalcularVisibles();
     renderizarResultados();
 }
 
+// quita los filtros pero conserva el orden elegido
 function quitarFiltros() {
     reiniciarPreferencias();
     sincronizarControlesFiltros();
     ocultarAviso("aviso-resultados");
+    recalcularVisibles();
     renderizarResultados();
 }
 
