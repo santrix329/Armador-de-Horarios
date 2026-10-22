@@ -48,6 +48,14 @@
             <div id="incompatibles-seleccion" class="aviso aviso-error" aria-live="polite" hidden></div>
             <ul id="lista-seleccion" class="lista-seleccion"></ul>
         </section>
+        <section id="seccion-resultados">
+            <h2>Horarios posibles</h2>
+            <button id="boton-generar" type="button" class="btn-primario">Generar horarios</button>
+            <p id="aviso-resultados" class="aviso" role="status" hidden></p>
+            <p id="resumen-resultados" class="resumen-resultados" aria-live="polite"></p>
+            <div id="detalle-resultados"></div>
+            <div id="contenedor-rejilla"></div>
+        </section>
         <section id="seccion-formulario">
             <h2>Materias manuales</h2>
             <p>Registra materias que no están en el catálogo. Se mantienen solo durante esta sesión.</p>
@@ -82,6 +90,7 @@
     <script src="js/validaciones.js"></script>
     <script src="js/formulario.js"></script>
     <script src="js/vistaSeleccion.js"></script>
+    <script src="js/vistaResultados.js"></script>
 
 
     <!-- 2. Despues la logica de nuestra aplicación -->

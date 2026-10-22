@@ -8,6 +8,7 @@ function iniciarAplicacion() {
     renderizarCatalogo("contenedor-catalogo");
     renderizarFormularioMateria("contenedor-formulario");
     iniciarPanelSeleccion();
+    iniciarResultados();
 
     // El aviso de carga ya no es necesario una vez pintado el catalogo
     const avisoCarga = document.querySelector(".welcome-section");

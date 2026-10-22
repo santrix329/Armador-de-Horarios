@@ -11,6 +11,7 @@ const materiasDesplegadas = new Set();
 function alCambiarSeleccion() {
     renderizarSeleccion();
     actualizarBotonesAgregar();
+    verificarVigenciaResultados();
 }
 
 // lo llama el formulario al registrar, editar o eliminar una materia manual,
@@ -19,6 +20,8 @@ function refrescarPanelSeleccion() {
     renderizarSeleccion();
     // una materia manual nueva puede traer un trimestre que antes no existia
     actualizarOpcionesAtajo();
+    // editar o eliminar una materia seleccionada cambia la seleccion
+    verificarVigenciaResultados();
 }
 
 // las opciones del atajo salen de los trimestres que existen en los datos
